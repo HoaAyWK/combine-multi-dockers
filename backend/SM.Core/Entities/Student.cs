@@ -10,6 +10,8 @@ public class Student : BaseEntity
 
     public DateTime DateOfBirth { get; private set; }
 
+    public string? Avatar { get; private set; }
+
     public string Gender { get; private set; } = default!;
 
     public List<Enrollment>? Enrollments { get; private set; }
@@ -46,5 +48,10 @@ public class Student : BaseEntity
         Email = email;
         DateOfBirth = dateOfBirth;
         Gender = gender;
+    }
+
+    public void UpdateAvatar(string avatar)
+    {
+        Avatar = avatar;
     }
 }

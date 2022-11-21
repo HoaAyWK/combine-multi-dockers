@@ -12,11 +12,13 @@ public class StudentsController : BaseController
 {
     private readonly IStudentService _studentService;
     private readonly IMapper _mapper;
+    private readonly IAWSS3Service _awsS3Service;
 
-    public StudentsController(IStudentService studentService, IMapper mapper)
+    public StudentsController(IStudentService studentService, IMapper mapper, IAWSS3Service awsS3Service)
     {
         _studentService = studentService;
         _mapper = mapper;
+        _awsS3Service = awsS3Service;
     }
 
     [HttpGet]
@@ -53,12 +55,35 @@ public class StudentsController : BaseController
     [HttpPut]
     [Route("update")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateStudentRequest request)
+    public async Task<IActionResult> Update(int id, [FromForm] UpdateStudentRequest request)
     {
+        var existingStudent = await _studentService.GetByIdAsync(id);
+
+        if (existingStudent == null)
+        {
+            return BadRequest("Student not found");
+        }
+
+        string? avatar = null;
+
+        if (request.Avatar != null)
+        {
+            if (existingStudent.Avatar != null)
+            {
+                await _awsS3Service.DeleteFileAsync(existingStudent.Avatar);
+            }
+
+            await using var memoryStream = new MemoryStream();
+            await request.Avatar.CopyToAsync(memoryStream);
+
+            avatar = await _awsS3Service.UploadFileAsync(request.Avatar.ContentType, memoryStream, "avatar");
+        }
+
         var result = await _studentService.UpdateAsync(
             id,
             request.FirstName,
             request.LastName,
+            avatar,
             request.Email,
             request.DateOfBirth,
             request.Gender);
@@ -74,10 +99,19 @@ public class StudentsController : BaseController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Delete(DeleteStudentRequest request)
     {
-        var result = await _studentService.DeleteAsync(request.StudentId);
+        var existingStudent = await _studentService.GetByIdAsync(request.StudentId);
 
-        if (result == false)
+        if (existingStudent == null)
+        {
             return BadRequest("Student not found");
+        }
+
+        if (existingStudent.Avatar != null)
+        {
+            await _awsS3Service.DeleteFileAsync(existingStudent.Avatar);
+        }
+
+        await _studentService.DeleteAsync(request.StudentId);
 
         return Ok(new DeleteStudentResponse());
     }

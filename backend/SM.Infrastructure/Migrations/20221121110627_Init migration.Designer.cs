@@ -12,7 +12,7 @@ using SM.Infrastructure.Data;
 namespace SM.Infrastructure.Migrations
 {
     [DbContext(typeof(StudentManagementContext))]
-    [Migration("20221121083716_Init migration")]
+    [Migration("20221121110627_Init migration")]
     partial class Initmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,6 +172,9 @@ namespace SM.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");

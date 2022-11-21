@@ -11,6 +11,7 @@ public interface IStudentService
         int id,
         string firstName,
         string lastName,
+        string? avatar,
         string email,
         DateTime birthDay,
         string gender);
