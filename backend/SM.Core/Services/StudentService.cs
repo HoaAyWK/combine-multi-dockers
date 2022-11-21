@@ -39,6 +39,7 @@ public class StudentService : IStudentService
         int id,
         string firstName,
         string lastName,
+        string? avatar,
         string email,
         DateTime birthDay,
         string gender)
@@ -57,6 +58,11 @@ public class StudentService : IStudentService
             birthDay,
             gender
         );
+
+        if (avatar != null)
+        {
+            existingStudent.UpdateAvatar(avatar);
+        }
 
         await _unitOfWork.SaveChangesAsync();
 

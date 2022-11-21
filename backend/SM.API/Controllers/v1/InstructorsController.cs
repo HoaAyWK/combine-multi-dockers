@@ -108,6 +108,7 @@ public class InstructorsController : BaseController
     public async Task<IActionResult> Delete(DeleteInstructorRequest request)
     {
         var instructor = await _instructorService.GetByIdAsync(request.InstructorId);
+
         if (instructor == null)
             return BadRequest("Instructor not found");
 
@@ -116,7 +117,7 @@ public class InstructorsController : BaseController
             await _awsS3Service.DeleteFileAsync(instructor.Avatar);
         }
 
-        var result = await _instructorService.DeleteAsync(request.InstructorId);
+        await _instructorService.DeleteAsync(request.InstructorId);
 
         return Ok(new DeleteInstructorResponse());
     }

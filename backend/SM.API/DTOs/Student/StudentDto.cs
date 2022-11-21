@@ -12,5 +12,7 @@ public class StudentDto
 
     public string Gender { get; set; } = default!;
 
+    public string? Avatar { get; set; }
+
     public DateTime DateOfBirth { get; set; }
 }
