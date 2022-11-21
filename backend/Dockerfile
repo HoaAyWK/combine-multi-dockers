@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 # copy all the layers' csproj files into respective folders
-COPY ./SM.Infrastucture/SM.Infrastucture.csproj ./SM.Infrastucture/
+COPY ./SM.Infrastructure/SM.Infrastructure.csproj ./SM.Infrastructure/
 COPY /SM.Core/SM.Core.csproj ./SM.Core/
 COPY ./SM.API/SM.API.csproj ./SM.API/
 
