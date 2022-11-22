@@ -105,7 +105,7 @@ public class InstructorsController : BaseController
     [HttpDelete]
     [Route("delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete(DeleteInstructorRequest request)
+    public async Task<IActionResult> Delete([FromQuery] DeleteInstructorRequest request)
     {
         var instructor = await _instructorService.GetByIdAsync(request.InstructorId);
 

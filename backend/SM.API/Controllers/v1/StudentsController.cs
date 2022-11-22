@@ -97,7 +97,7 @@ public class StudentsController : BaseController
     [HttpDelete]
     [Route("delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete(DeleteStudentRequest request)
+    public async Task<IActionResult> Delete([FromQuery] DeleteStudentRequest request)
     {
         var existingStudent = await _studentService.GetByIdAsync(request.StudentId);
 
