@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Api from "../../api/Api";
 import Button from "../../components/button/Button";
 import DashboardHeading from "../dashboard/DashboardHeding";
 import StudentTable from "../students/StudentTable";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { getStudent } from "./studentSlice";
+import { action_status } from "../../constant/status";
+import LoadingPage from "../../components/loading/LoadingPage";
 
 const Student = () => {
   const navigate = useNavigate();
-  const [student, setStudent] = useState([]);
+  const dispatch = useDispatch();
+  const { status, student } = useSelector((state) => state.student);
+
   useEffect(() => {
     document.title = "Student Management Page";
     if (
@@ -21,28 +26,31 @@ const Student = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await Api.getStudent();
-        setStudent(response);
-      } catch (error) {
-        console.log(error.message);
-      }
+    try {
+      dispatch(getStudent());
+    } catch (error) {
+      console.log(error.message);
     }
-    fetchData();
   }, []);
+
   return (
     <div>
       <DashboardHeading
         title="Student"
         desc="Manage your student"
       ></DashboardHeading>
-      <div className="flex justify-end mb-10">
-        <Button kind="ghost" to="/manage/add-user">
-          Add new student
-        </Button>
-      </div>
-      <StudentTable data={student}></StudentTable>
+      {status === action_status.LOADING && <LoadingPage />}
+      {status === action_status.SUCCEEDED && (
+        <>
+          {" "}
+          <div className="flex justify-end mb-10">
+            <Button kind="ghost" to="/manage/add-user">
+              Add new student
+            </Button>
+          </div>
+          <StudentTable data={student}></StudentTable>
+        </>
+      )}
     </div>
   );
 };

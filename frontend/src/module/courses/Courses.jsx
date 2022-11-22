@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import DashboardHeading from "../dashboard/DashboardHeding";
 import Button from "../../components/button/Button";
 import CoursesTable from "./CoursesTable";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import Api from "../../api/Api";
+import { useDispatch, useSelector } from "react-redux";
+import { getCourse } from "./courseSlice";
+import { action_status } from "../../constant/status";
+import LoadingPage from "../../components/loading/LoadingPage";
+
 const Courses = () => {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState([]);
+  const { status, course } = useSelector((state) => state.course);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (
@@ -20,15 +25,11 @@ const Courses = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await Api.getCourses();
-        setCourses(response);
-      } catch (error) {
-        console.log(error.message);
-      }
+    try {
+      dispatch(getCourse());
+    } catch (error) {
+      console.log(error.message);
     }
-    fetchData();
   }, []);
   return (
     <div>
@@ -36,12 +37,18 @@ const Courses = () => {
         title="Courses"
         desc="Manage your courses"
       ></DashboardHeading>
-      <div className="flex justify-end mb-10">
-        <Button kind="ghost" to="/manage/add-user">
-          Add new courses
-        </Button>
-      </div>
-      <CoursesTable data={courses}></CoursesTable>
+      {status === action_status.LOADING && <LoadingPage />}
+      {status === action_status.SUCCEEDED && (
+        <>
+          {" "}
+          <div className="flex justify-end mb-10">
+            <Button kind="ghost" to="/manage/add-user">
+              Add new courses
+            </Button>
+          </div>
+          <CoursesTable data={course}></CoursesTable>
+        </>
+      )}
     </div>
   );
 };
