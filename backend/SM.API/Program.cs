@@ -11,6 +11,9 @@ using SM.Infrastructure.Data;
 using SM.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var clientOrigin = builder.Configuration["ClientOrigin"];
+Console.WriteLine($"Client origin: {clientOrigin}");
 
 // Add services to the container.
 
@@ -92,6 +95,14 @@ builder.Services.AddApiServices(builder.Configuration);
 
 builder.Services.AddCoreServices(builder.Configuration);
 
+builder.Services.AddCors(options => {
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy => {
+            policy.WithOrigins(clientOrigin)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -123,6 +134,8 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 
 app.UseSwaggerUI();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
 

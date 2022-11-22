@@ -1,12 +1,12 @@
-version: '3.9'
+version: "3.9"
 services:
   db:
-    image: 'mcr.microsoft.com/mssql/server:2022-latest'
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
     ports:
-      - '1433:1433'
+      - "1433:1433"
 
     environment:
-      SA_PASSWORD: 'Password123'
+      SA_PASSWORD: "Password123"
       ACCEPT_EULA: Y
 
   api:
@@ -17,10 +17,10 @@ services:
       dockerfile: Dockerfile
     image: nsioay/sm_api:latest
     ports:
-      - '8080:80'
+      - "8080:80"
     env_file: ./.env
     environment:
       - AWSConfig__AWSAccessKey=$AWSConfig__AWSAccessKey
       - AWSConfig__AWSSecretKey=$AWSConfig__AWSSecretKey
       - AWSConfig__BucketName=$AWSConfig__BucketName
-    
+      - ClientOrgin=$ClientOrgin
