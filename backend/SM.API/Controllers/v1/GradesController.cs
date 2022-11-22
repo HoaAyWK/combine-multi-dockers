@@ -57,7 +57,7 @@ public class GradesController : BaseController
     [HttpDelete]
     [Route("delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete(DeleteGradeRequest request)
+    public async Task<IActionResult> Delete([FromQuery] DeleteGradeRequest request)
     {
         var result = await _gradeService.DeleteAsync(request.GradeId);
 

@@ -72,7 +72,7 @@ public class SubjectsController : BaseController
     [HttpDelete]
     [Route("delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete(DeleteSubjectRequest request)
+    public async Task<IActionResult> Delete([FromQuery] DeleteSubjectRequest request)
     {
         var result = await _subjectService.DeleteAsync(request.SubjectId);
 
