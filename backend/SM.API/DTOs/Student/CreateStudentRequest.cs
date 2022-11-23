@@ -16,4 +16,6 @@ public class CreateStudentRequest
     public string Gender { get; set; } = default!;
 
     public DateTime DateOfBirth { get; set; }
+
+    public IFormFile? Avatar { get; set; }
 }

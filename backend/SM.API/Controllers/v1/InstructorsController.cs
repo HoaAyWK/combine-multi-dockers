@@ -44,14 +44,28 @@ public class InstructorsController : BaseController
     [HttpPost]
     [Route("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Create([FromBody] CreateInstructorRequest request)
+    public async Task<IActionResult> Create([FromForm] CreateInstructorRequest request)
     {
+        string? avatar = null;
+
+        if (request.Avatar != null)
+        {
+            await using var memoryStream = new MemoryStream();
+
+            await request.Avatar.CopyToAsync(memoryStream);
+            avatar = await _awsS3Service.UploadFileAsync(
+                request.Avatar.ContentType,
+                memoryStream,
+                "avatar");
+        }
+
         var result = await _instructorService.CreateAsync(
             request.FirstName,
             request.LastName,
             request.Email,
             request.Phone,
-            request.DateOfBirth);
+            request.DateOfBirth,
+            avatar);
 
         return Ok(result);
     }
