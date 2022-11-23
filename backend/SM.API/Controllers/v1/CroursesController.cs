@@ -70,12 +70,11 @@ public class CoursesController : BaseController
         return Ok(courseDto);
     }
 
-    [HttpDelete]
-    [Route("delete")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteCourseRequest request)
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = await _courseService.DeleteAsync(request.CourseId);
+        var result = await _courseService.DeleteAsync(id);
 
         if (result == false)
             return BadRequest("Course not found");

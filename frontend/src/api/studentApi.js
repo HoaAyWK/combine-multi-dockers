@@ -17,7 +17,7 @@ const studentApi = {
     return axiosClient.put(url, data);
   },
   deleteStudent(id) {
-    const url = `/api/v1/Students/delete?StudentId=${id}`;
+    const url = `/api/v1/Students/${id}`;
     return axiosClient.delete(url);
   },
 };

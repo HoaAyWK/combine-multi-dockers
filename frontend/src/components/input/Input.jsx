@@ -14,8 +14,8 @@ const InputStyles = styled.div`
     border-radius: 8px;
     transition: all 0.2s linear;
     color: ${(props) => props.theme.black};
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
   }
   input::-webkit-input-placeholder {
     color: #b2b3bd;

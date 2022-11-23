@@ -1,7 +1,9 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Swal from "sweetalert2";
+import { logout } from "../authSlice";
 const SidebarStyles = styled.div`
   width: 300px;
   background: #ffffff;
@@ -37,6 +39,7 @@ const SidebarStyles = styled.div`
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const sidebarLinks = [
     {
       title: "Enrollments",
@@ -212,8 +215,7 @@ const Sidebar = () => {
           cancelButtonText: "No",
         }).then(async (result) => {
           if (result.isConfirmed) {
-            localStorage.removeItem("jwt");
-            localStorage.removeItem("user");
+            dispatch(logout());
             navigate("/sign-in");
           }
         });

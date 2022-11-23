@@ -17,7 +17,7 @@ const intructorApi = {
     return axiosClient.put(url, data);
   },
   deleteInstructor(id) {
-    const url = `/api/v1/Instructors/delete?InstructorId=${id}`;
+    const url = `/api/v1/Instructors/${id}`;
     return axiosClient.delete(url);
   },
 };

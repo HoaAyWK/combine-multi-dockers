@@ -49,7 +49,7 @@ const SignInPage = () => {
     if (!isValid) return;
     try {
       dispatch(login(values));
-      toast.success("Sign In Successfully!!!", { pauseOnHover: false });
+      toast.success("Log In Successfully!!!", { pauseOnHover: false });
       navigate("/manage-enrollments");
       reset({
         username: "",
@@ -106,7 +106,7 @@ const SignInPage = () => {
             fontSize: "20px",
           }}
         >
-          Sign In
+          Log In
         </Button>
       </form>
     </AuthenticationPage>

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignInPage from "./pages/SignInPage";
 import DashboardLayout from "./module/dashboard/DashboardLayout";
@@ -10,6 +9,7 @@ import Semester from "./module/semester/Semester";
 import Student from "./module/students/Student";
 import Subject from "./module/subjects/Subject";
 import EnrollmentAdd from "./module/enrollments/EnrollmentAdd";
+import PageNotFound from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -29,6 +29,7 @@ function App() {
         <Route path="/manage-subjects" element={<Subject />}></Route>
       </Route>
       <Route path="/sign-in" element={<SignInPage />}></Route>
+      <Route path="*" element={<PageNotFound />}></Route>
     </Routes>
   );
 }

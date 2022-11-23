@@ -68,12 +68,11 @@ public class SemestersController : BaseController
         return Ok(result);
     }
 
-    [HttpDelete]
-    [Route("delete")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteSemesterRequest request)
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = await _semesterService.DeleteAsync(request.SemesterId);
+        var result = await _semesterService.DeleteAsync(id);
 
         if (result == false)
             return BadRequest("Semester not found");

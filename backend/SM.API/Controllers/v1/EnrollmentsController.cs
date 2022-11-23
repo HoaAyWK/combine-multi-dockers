@@ -60,12 +60,11 @@ public class EnrollmentsController : BaseController
         return Ok(enrollmentDto);
     }
 
-    [HttpDelete]
-    [Route("delete")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteEnrollmentRequest request)
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = await _enrollmentService.DeleteAsync(request.EnrollmentId);
+        var result = await _enrollmentService.DeleteAsync(id);
 
         return Ok(new DeleteEnrollmentResponse());
     }
