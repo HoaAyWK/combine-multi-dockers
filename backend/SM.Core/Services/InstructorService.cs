@@ -28,14 +28,16 @@ public class InstructorService : IInstructorService
         string lastName,
         string email,
         string phone,
-        DateTime birthDay)
+        DateTime birthDay,
+        string? avatar)
     {
         var instructor = new Instructor(
             firstName,
             lastName,
             email,
             phone,
-            birthDay
+            birthDay,
+            avatar
         );
 
         var result = await _unitOfWork.Instructors.AddAsync(instructor);

@@ -27,13 +27,15 @@ public class Student : BaseEntity
         string lastName,
         string email,
         DateTime dateOfBirth,
-        string gender)
+        string gender,
+        string? avatar)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         DateOfBirth = dateOfBirth;
         Gender = gender;
+        Avatar = avatar;
     }
 
     public void Update(

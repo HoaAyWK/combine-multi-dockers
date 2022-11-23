@@ -44,9 +44,26 @@ public class StudentsController : BaseController
     [HttpPost]
     [Route("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Create([FromBody] CreateStudentRequest request)
+    public async Task<IActionResult> Create([FromForm] CreateStudentRequest request)
     {
-        var student = _mapper.Map<Student>(request);
+        string? avatar = null;
+
+        if (request.Avatar != null)
+        {
+            await using var memoryStream = new MemoryStream();
+            await request.Avatar.CopyToAsync(memoryStream);
+
+            avatar = await _awsS3Service.UploadFileAsync(request.Avatar.ContentType, memoryStream, "avatar");
+        }
+
+        var student = new Student(
+            request.FirstName,
+            request.LastName,
+            request.Email,
+            request.DateOfBirth,
+            request.Gender,
+            avatar);
+
         var result = await _studentService.CreateAsync(student);
 
         return Ok(result);

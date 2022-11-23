@@ -25,13 +25,15 @@ public class Instructor : BaseEntity
         string lastName,
         string email,
         string phone,
-        DateTime dateOfBirth)
+        DateTime dateOfBirth,
+        string? avatar)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         Phone = phone;
         DateOfBirth = dateOfBirth;
+        Avatar = avatar;
     }
 
     public void Update(
