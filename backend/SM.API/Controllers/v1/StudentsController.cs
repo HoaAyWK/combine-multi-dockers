@@ -94,12 +94,11 @@ public class StudentsController : BaseController
         return Ok(result);
     }
 
-    [HttpDelete]
-    [Route("delete")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteStudentRequest request)
+    public async Task<IActionResult> Delete(int id)
     {
-        var existingStudent = await _studentService.GetByIdAsync(request.StudentId);
+        var existingStudent = await _studentService.GetByIdAsync(id);
 
         if (existingStudent == null)
         {
@@ -111,7 +110,7 @@ public class StudentsController : BaseController
             await _awsS3Service.DeleteFileAsync(existingStudent.Avatar);
         }
 
-        await _studentService.DeleteAsync(request.StudentId);
+        await _studentService.DeleteAsync(id);
 
         return Ok(new DeleteStudentResponse());
     }

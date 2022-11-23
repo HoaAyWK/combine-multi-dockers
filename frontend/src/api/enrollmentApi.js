@@ -13,8 +13,8 @@ const enrollmentApi = {
     const url = `/api/v1/Enrollments/create`;
     return axiosClient.post(url, data);
   },
-  deleteEnrollments() {
-    const url = `/api/v1/Enrollments/delete`;
+  deleteEnrollments(id) {
+    const url = `/api/v1/Enrollments/${id}`;
     return axiosClient.delete(url);
   },
 };

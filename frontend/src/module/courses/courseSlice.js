@@ -39,7 +39,7 @@ export const deleteCourse = createAsyncThunk(
 const courseSlice = createSlice({
   name: "course",
   initialState: {
-    status: action_status.IDLE,
+    statusCourse: action_status.IDLE,
     statusId: action_status.IDLE,
     course: {},
     courseId: {},
@@ -56,14 +56,14 @@ const courseSlice = createSlice({
   },
   extraReducers: {
     [getCourse.pending]: (state, action) => {
-      state.status = action_status.LOADING;
+      state.statusCourse = action_status.LOADING;
     },
     [getCourse.fulfilled]: (state, action) => {
-      state.status = action_status.SUCCEEDED;
+      state.statusCourse = action_status.SUCCEEDED;
       state.course = action.payload;
     },
     [getCourse.rejected]: (state, action) => {
-      state.status = action_status.FAILED;
+      state.statusCourse = action_status.FAILED;
     },
     [getCourseId.pending]: (state, action) => {
       state.statusId = action_status.LOADING;

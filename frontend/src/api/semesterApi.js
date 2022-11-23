@@ -17,7 +17,7 @@ const semesterApi = {
     return axiosClient.put(url, data);
   },
   deleteSemester(id) {
-    const url = `/api/v1/Semesters/delete?SemesterId=${id}`;
+    const url = `/api/v1/Semesters/${id}`;
     return axiosClient.delete(url);
   },
 };

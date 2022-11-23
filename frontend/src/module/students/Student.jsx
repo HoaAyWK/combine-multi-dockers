@@ -13,17 +13,15 @@ const Student = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { status, student } = useSelector((state) => state.student);
+  const { current } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    document.title = "Student Management Page";
-    if (
-      localStorage.getItem("jwt") === null &&
-      localStorage.getItem("user") === null
-    ) {
-      toast.warning("Please log in", { pauseOnHover: false });
+    if (!current) {
+      toast.dismiss();
+      toast.warning("Please Log In");
       navigate("/sign-in");
     }
-  }, []);
+  }, [current]);
 
   useEffect(() => {
     try {

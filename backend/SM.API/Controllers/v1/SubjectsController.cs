@@ -69,12 +69,11 @@ public class SubjectsController : BaseController
         return Ok(result);
     }
 
-    [HttpDelete]
-    [Route("delete")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteSubjectRequest request)
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = await _subjectService.DeleteAsync(request.SubjectId);
+        var result = await _subjectService.DeleteAsync(id);
 
         if (result == false)
             return BadRequest("Subject not found");

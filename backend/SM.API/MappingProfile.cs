@@ -39,5 +39,13 @@ public class MappingProfile : Profile
 
         CreateMap<Grade, GradeDto>();
         CreateMap<Grade, CreateGradeResponse>();
+
+        CreateMap<CreateCourseRequest, Course>();
+        CreateMap<CreateSemesterRequest, Semester>();
+        CreateMap<CreateInstructorRequest, Instructor>();
+        CreateMap<CreateStudentRequest, Student>();
+        CreateMap<CreateSubjectRequest, Subject>();
+        CreateMap<CreateEnrollmentRequest, Enrollment>();
+        CreateMap<CreateGradeRequest, Grade>();
     }
 }

@@ -11,22 +11,21 @@ import LoadingPage from "../../components/loading/LoadingPage";
 
 const Courses = () => {
   const navigate = useNavigate();
-  const { status, course } = useSelector((state) => state.course);
+  const { statusCourse, course } = useSelector((state) => state.course);
+  const { current } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (
-      localStorage.getItem("jwt") === null &&
-      localStorage.getItem("user") === null
-    ) {
-      toast.warning("Please log in", { pauseOnHover: false });
+    if (!current) {
+      toast.dismiss();
+      toast.warning("Please Log In");
       navigate("/sign-in");
     }
-  }, []);
+  }, [current]);
 
   useEffect(() => {
     try {
-      dispatch(getCourse());
+      if (statusCourse === action_status.IDLE) dispatch(getCourse());
     } catch (error) {
       console.log(error.message);
     }
@@ -37,8 +36,8 @@ const Courses = () => {
         title="Courses"
         desc="Manage your courses"
       ></DashboardHeading>
-      {status === action_status.LOADING && <LoadingPage />}
-      {status === action_status.SUCCEEDED && (
+      {statusCourse === action_status.LOADING && <LoadingPage />}
+      {statusCourse === action_status.SUCCEEDED && (
         <>
           {" "}
           <div className="flex justify-end mb-10">

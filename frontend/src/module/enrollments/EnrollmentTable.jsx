@@ -1,10 +1,38 @@
 import React from "react";
 import Table from "../../components/table/Table";
 import ActionDelete from "../../components/action/ActionDelete";
-import ActionEdit from "../../components/action/ActionEdit";
+import { useDispatch } from "react-redux";
+import { deleteEnrollment } from "./enrollmentSlice";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const EnrollmentTable = ({ data }) => {
+  const dispatch = useDispatch();
   const renderEnrollmentItem = (enrollment) => {
+    const handleDelete = (enrollment) => {
+      Swal.fire({
+        title: "Delete ",
+        text: "Are you sure you want to delete it ?",
+        showCancelButton: true,
+        icon: "question",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            console.log(enrollment.id);
+            dispatch(deleteEnrollment(enrollment.id));
+            toast.dismiss();
+            toast.success("Delete Enrollment Success!!!");
+          } catch (error) {
+            console.log(error);
+            console.log(error.message);
+          }
+        }
+      });
+    };
     return (
       <tr key={enrollment.id}>
         <td>
@@ -15,10 +43,9 @@ const EnrollmentTable = ({ data }) => {
         <td> {enrollment.course.semester.name}</td>
         <td>
           <div className="flex gap-5 text-gray-400">
-            <ActionEdit
-              onClick={() => navigate(`/manage/update-user?id=${user.id}`)}
-            ></ActionEdit>
-            <ActionDelete onClick={() => handleDeleteUser(user)}></ActionDelete>
+            <ActionDelete
+              onClick={() => handleDelete(enrollment)}
+            ></ActionDelete>
           </div>
         </td>
       </tr>

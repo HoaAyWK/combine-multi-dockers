@@ -13,15 +13,15 @@ const Instructor = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { status, instructor } = useSelector((state) => state.instructor);
+  const { current } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    if (
-      localStorage.getItem("jwt") === null &&
-      localStorage.getItem("user") === null
-    ) {
-      toast.warning("Please log in", { pauseOnHover: false });
+    if (!current) {
+      toast.dismiss();
+      toast.warning("Please Log In");
       navigate("/sign-in");
     }
-  }, []);
+  }, [current]);
 
   useEffect(() => {
     try {

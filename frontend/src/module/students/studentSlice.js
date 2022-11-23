@@ -42,7 +42,7 @@ export const deleteStudent = createAsyncThunk(
 const studentSlice = createSlice({
   name: "student",
   initialState: {
-    status: action_status.IDLE,
+    statusStudent: action_status.IDLE,
     statusId: action_status.IDLE,
     student: {},
     studentId: {},
@@ -59,14 +59,14 @@ const studentSlice = createSlice({
   },
   extraReducers: {
     [getStudent.pending]: (state, action) => {
-      state.status = action_status.LOADING;
+      state.statusStudent = action_status.LOADING;
     },
     [getStudent.fulfilled]: (state, action) => {
-      state.status = action_status.SUCCEEDED;
+      state.statusStudent = action_status.SUCCEEDED;
       state.student = action.payload;
     },
     [getStudent.rejected]: (state, action) => {
-      state.status = action_status.FAILED;
+      state.statusStudent = action_status.FAILED;
     },
     [getStudentId.pending]: (state, action) => {
       state.statusId = action_status.LOADING;

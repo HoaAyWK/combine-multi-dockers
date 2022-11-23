@@ -102,12 +102,11 @@ public class InstructorsController : BaseController
         return Ok(result);
     }
 
-    [HttpDelete]
-    [Route("delete")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteInstructorRequest request)
+    public async Task<IActionResult> Delete(int id)
     {
-        var instructor = await _instructorService.GetByIdAsync(request.InstructorId);
+        var instructor = await _instructorService.GetByIdAsync(id);
 
         if (instructor == null)
             return BadRequest("Instructor not found");
@@ -117,7 +116,7 @@ public class InstructorsController : BaseController
             await _awsS3Service.DeleteFileAsync(instructor.Avatar);
         }
 
-        await _instructorService.DeleteAsync(request.InstructorId);
+        await _instructorService.DeleteAsync(id);
 
         return Ok(new DeleteInstructorResponse());
     }

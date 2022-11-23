@@ -40,7 +40,7 @@ const DropdownSelect = ({
           show ? "shadow" : "opacity-0 invisible"
         }`}
       >
-        {data &&
+        {name === "StudentId" &&
           data.map((item) => (
             <div
               className="p-5 cursor-pointer hover:bg-gray-100"
@@ -49,6 +49,17 @@ const DropdownSelect = ({
               key={item.id}
             >
               {item.firstName} {item.lastName}
+            </div>
+          ))}
+        {name === "CourseId" &&
+          data.map((item) => (
+            <div
+              className="p-5 cursor-pointer hover:bg-gray-100"
+              onClick={handleClickDropdownItem}
+              data-value={item.subject.id}
+              key={item.id}
+            >
+              {item.subject.name}
             </div>
           ))}
       </div>

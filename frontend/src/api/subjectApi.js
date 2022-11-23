@@ -17,7 +17,7 @@ const subjectApi = {
     return axiosClient.put(url, data);
   },
   deleteSubject(id) {
-    const url = `/api/v1/Subjects/delete?SubjectId=${id}`;
+    const url = `/api/v1/Subjects/${id}`;
     return axiosClient.delete(url);
   },
 };

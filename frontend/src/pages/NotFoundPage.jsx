@@ -7,8 +7,8 @@ const PageNotFoundStyles = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: ${(props) => props.theme.black};
   color: white;
+  background-color: #171725;
   .page-content {
     max-width: 1000px;
     margin: 0 auto;
@@ -31,11 +31,7 @@ const PageNotFoundStyles = styled.div`
     display: inline-block;
     padding: 15px 30px;
     color: white;
-    background-image: linear-gradient(
-      to right top,
-      ${(props) => props.theme.primary},
-      ${(props) => props.theme.secondary}
-    );
+    background-image: linear-gradient(to right top, #1dc071, #a4d96c);
     border-radius: 8px;
     font-weight: 500;
   }

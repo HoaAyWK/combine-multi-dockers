@@ -12,12 +12,12 @@ const courseApi = {
     const url = "/api/v1/Courses/create";
     return axiosClient.post(url, data);
   },
-  updateCourse(data) {
-    const url = "/api/v1/Courses/update";
+  updateCourse(id, data) {
+    const url = `/api/v1/Courses/update?id=${id}`;
     return axiosClient.put(url, data);
   },
-  deleteCourse() {
-    const url = "/api/v1/Courses/delete";
+  deleteCourse(id) {
+    const url = `/api/v1/Courses/${id}`;
     return axiosClient.delete(url);
   },
 };

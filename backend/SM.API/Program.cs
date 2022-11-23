@@ -135,9 +135,9 @@ app.UseSwagger();
 
 app.UseSwaggerUI();
 
-app.UseCors(MyAllowSpecificOrigins);
-
 app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 

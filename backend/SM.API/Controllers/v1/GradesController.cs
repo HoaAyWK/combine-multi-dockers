@@ -54,12 +54,11 @@ public class GradesController : BaseController
         return Ok(gradeDto);
     }
 
-    [HttpDelete]
-    [Route("delete")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteGradeRequest request)
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = await _gradeService.DeleteAsync(request.GradeId);
+        var result = await _gradeService.DeleteAsync(id);
 
         if (result == false)
             return BadRequest("Grade not found");

@@ -23,4 +23,4 @@ services:
       - AWSConfig__AWSAccessKey=$AWSConfig__AWSAccessKey
       - AWSConfig__AWSSecretKey=$AWSConfig__AWSSecretKey
       - AWSConfig__BucketName=$AWSConfig__BucketName
-      - ClientOrgin=$ClientOrgin
+      - ClientOrigin=$ClientOrigin

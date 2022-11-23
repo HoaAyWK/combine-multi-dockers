@@ -14,6 +14,10 @@ const axiosClient = axios.create({
 // Add a request interceptor
 axiosClient.interceptors.request.use(
   function (config) {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = "Bearer " + token;
+    }
     // Do something before request is sent
 
     return config;
@@ -42,20 +46,21 @@ axiosClient.interceptors.response.use(
       "/api/v1/Courses",
       "/api/v1/Courses/:id",
       "/api/v1/Courses/create",
-      "/api/v1/Courses/update",
-      "/api/v1/Courses/delete",
+      "/api/v1/Courses/update?id=",
 
       "/api/v1/Enrollments",
       "/api/v1/Enrollments/:id",
       "/api/v1/Enrollments/create",
-      "/api/v1/Enrollments/delete",
 
       "/api/v1/Grades",
       "/api/v1/Grades/:id",
       "/api/v1/Grades/create",
-      "/api/v1/Grades/delete",
 
       "/api/v1/Instructors",
+      "/api/v1/Instructors:id",
+      "/api/v1/Instructors/create",
+      "/api/v1/Instructors/update?id=",
+
       "/api/v1/Semesters",
       "/api/v1/Students",
       "/api/v1/Subjects",

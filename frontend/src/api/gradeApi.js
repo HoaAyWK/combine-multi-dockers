@@ -13,8 +13,8 @@ const gradeApi = {
     const url = "/api/v1/Grades/create";
     return axiosClient.post(url, data);
   },
-  deleteGrades() {
-    const url = "/api/v1/Grades/delete";
+  deleteGrades(id) {
+    const url = `/api/v1/Grades/${id}`;
     return axiosClient.delete();
   },
 };
