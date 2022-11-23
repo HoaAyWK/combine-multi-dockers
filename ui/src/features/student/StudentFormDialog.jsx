@@ -22,6 +22,7 @@ import {
 import { Stack } from "@mui/system";
 import AvatarUploader from "../../components/AvatarUploader";
 import { BASE_S3_URL } from "../../app/constants";
+import RHFDate from "../../components/hook-form/RHFDate";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.grey[500_24],
@@ -105,11 +106,7 @@ const StudentFormDialog = (props) => {
             <RHFTextField name="firstName" label="First Name *" fullWidth />
             <RHFTextField name="lastName" label="Last Name *" fullWidth />
             <RHFTextField name="email" label="Email *" fullWidth />
-            <RHFTextField
-              name="dateOfBirth"
-              label="Date Of Birth *"
-              fullWidth
-            />
+            <RHFDate name="dateOfBirth" label="Date Of Birth *" fullWidth />
             <RHFRadioGroup
               name="gender"
               id="radios-gender"

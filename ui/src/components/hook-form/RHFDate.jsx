@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useFormContext, Controller } from "react-hook-form";
-import { TextField } from "@mui/material";
+import TextField from "@mui/material/TextField";
 
-const RHFTextField = ({ name, ...other }) => {
+const RHFDate = ({ name, ...other }) => {
   const { control } = useFormContext();
 
   return (
@@ -14,22 +14,22 @@ const RHFTextField = ({ name, ...other }) => {
         <TextField
           {...field}
           fullWidth
-          value={
-            typeof field.value === "number" && field.value === 0
-              ? ""
-              : field.value
-          }
+          type="date"
           error={!!error}
           helperText={error?.message}
           {...other}
+          sx={{ width: 220 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
       )}
     />
   );
 };
 
-RHFTextField.propTypes = {
+RHFDate.propTypes = {
   name: PropTypes.string,
 };
 
-export default RHFTextField;
+export default RHFDate;
