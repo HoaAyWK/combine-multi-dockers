@@ -1,6 +1,7 @@
 using SM.Core.Entities;
 using SM.Core.Interfaces.Services;
 using SM.Core.Interfaces.UoW;
+using SM.Core.Constants;
 
 namespace SM.Core.Services;
 
@@ -39,25 +40,25 @@ public class EnrollmentService : IEnrollmentService
         return result;
     }
 
-    public async Task<bool> DeleteAsync(int enrollmentId)
+    public async Task<string> DeleteAsync(int enrollmentId)
     {
         var enrollmentToDelete = await _unitOfWork.Enrollments.GetByIdAsync(enrollmentId);
 
         if (enrollmentToDelete == null)
         {
-            return false;
+            return EnrollmentMessages.NotFound;
         }
 
         var existingGrade = await _unitOfWork.Grades.GetGradeByCourseAndStudentAsync(enrollmentToDelete.CourseId, enrollmentToDelete.StudentId);
 
         if (existingGrade != null)
         {
-            return false;
+            return $"Please delete Grade with courseId '{enrollmentToDelete.CourseId}' and studentId '{enrollmentToDelete.StudentId}' first!";
         } 
         
         _unitOfWork.Enrollments.Delete(enrollmentToDelete);
         await _unitOfWork.SaveChangesAsync();
 
-        return true;
+        return EnrollmentMessages.Deleted;
     }
 }

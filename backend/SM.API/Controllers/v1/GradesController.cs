@@ -48,6 +48,10 @@ public class GradesController : BaseController
     public async Task<IActionResult> Create([FromBody] CreateGradeRequest request)
     {
         var grade = _mapper.Map<Grade>(request);
+        if (grade == null)
+        {
+            return BadRequest("It is not possible to assign marks to subject that student has not studied yet");
+        }
         var result = await _gradeService.CreateAsync(grade);
         var gradeDto = _mapper.Map<GradeDto>(grade);
 

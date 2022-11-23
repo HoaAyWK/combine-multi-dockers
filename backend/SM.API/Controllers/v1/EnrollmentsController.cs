@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using SM.Core.Entities;
 using SM.API.DTOs.Enrollment;
+using SM.Core.Constants;
 
 namespace SM.API.Controllers.v1;
 
@@ -66,6 +67,11 @@ public class EnrollmentsController : BaseController
     {
         var result = await _enrollmentService.DeleteAsync(id);
 
-        return Ok(new DeleteEnrollmentResponse());
+        if (result == EnrollmentMessages.Deleted)
+        {
+            return Ok(new DeleteEnrollmentResponse());
+        }
+
+        return BadRequest(result);
     }
 }
