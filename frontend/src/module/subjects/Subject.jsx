@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/button/Button";
 import DashboardHeading from "../dashboard/DashboardHeding";
 import SubjectTable from "./SubjectTable";
-import Api from "../../api/Api";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { getSubject } from "./subjectSlice";
+import { action_status } from "../../constant/status";
+import LoadingPage from "../../components/loading/LoadingPage";
 
 const Subject = () => {
   const navigate = useNavigate();
-  const [subject, setSubject] = useState([]);
+  const dispatch = useDispatch();
+  const { status, subject } = useSelector((state) => state.subject);
+
   useEffect(() => {
     if (
       localStorage.getItem("jwt") === null &&
@@ -20,15 +25,11 @@ const Subject = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await Api.getSubject();
-        setSubject(response);
-      } catch (error) {
-        console.log(error.message);
-      }
+    try {
+      dispatch(getSubject());
+    } catch (error) {
+      console.log(error.message);
     }
-    fetchData();
   }, []);
 
   return (
@@ -37,12 +38,18 @@ const Subject = () => {
         title="Subject"
         desc="Manage your subject"
       ></DashboardHeading>
-      <div className="flex justify-end mb-10">
-        <Button kind="ghost" to="/manage/add-user">
-          Add new subject
-        </Button>
-      </div>
-      <SubjectTable data={subject}></SubjectTable>
+      {status === action_status.LOADING && <LoadingPage />}
+      {status === action_status.SUCCEEDED && (
+        <>
+          {" "}
+          <div className="flex justify-end mb-10">
+            <Button kind="ghost" to="/manage/add-user">
+              Add new subject
+            </Button>
+          </div>
+          <SubjectTable data={subject}></SubjectTable>
+        </>
+      )}
     </div>
   );
 };

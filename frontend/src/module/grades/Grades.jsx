@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/button/Button";
 import DashboardHeading from "../dashboard/DashboardHeding";
 import GradesTable from "./GradesTable";
 import { toast } from "react-toastify";
-import Api from "../../api/Api";
+import { useDispatch, useSelector } from "react-redux";
+import { getGrade } from "./gradeSlice";
+import { action_status } from "../../constant/status";
+import LoadingPage from "../../components/loading/LoadingPage";
 
 const Grades = () => {
   const navigate = useNavigate();
-  const [grades, setGrades] = useState([]);
+  const dispatch = useDispatch();
+  const { status, grade } = useSelector((state) => state.grade);
+
   useEffect(() => {
     if (
       localStorage.getItem("jwt") === null &&
@@ -20,15 +25,11 @@ const Grades = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await Api.getGrades();
-        setGrades(response);
-      } catch (error) {
-        console.log(error.message);
-      }
+    try {
+      dispatch(getGrade());
+    } catch (error) {
+      console.log(error.message);
     }
-    fetchData();
   }, []);
   return (
     <div>
@@ -36,12 +37,18 @@ const Grades = () => {
         title="Grades"
         desc="Manage your grades"
       ></DashboardHeading>
-      <div className="flex justify-end mb-10">
-        <Button kind="ghost" to="/manage/add-user">
-          Add new grades
-        </Button>
-      </div>
-      <GradesTable data={grades}></GradesTable>
+      {status === action_status.LOADING && <LoadingPage />}
+      {status === action_status.SUCCEEDED && (
+        <>
+          {" "}
+          <div className="flex justify-end mb-10">
+            <Button kind="ghost" to="/manage/add-user">
+              Add new grades
+            </Button>
+          </div>
+        </>
+      )}
+      <GradesTable data={grade}></GradesTable>
     </div>
   );
 };

@@ -8,7 +8,6 @@ const DropdownSelect = ({
   name,
   data,
   dropdownLabel = "Chọn",
-  onClick = () => {},
 }) => {
   const [label, setLabel] = useState(dropdownLabel);
   const { show, setShow, nodeRef } = useClickOutSide();
@@ -20,7 +19,6 @@ const DropdownSelect = ({
   const handleClickDropdownItem = (e) => {
     setValue(name, e.target.dataset.value);
     setShow(false);
-    onClick(e.target.dataset.key);
     setLabel(e.target.textContent);
   };
 
@@ -47,11 +45,10 @@ const DropdownSelect = ({
             <div
               className="p-5 cursor-pointer hover:bg-gray-100"
               onClick={handleClickDropdownItem}
-              data-value={item.name}
-              data-key={item.code}
-              key={item.name}
+              data-value={item.id}
+              key={item.id}
             >
-              {item.name}
+              {item.firstName} {item.lastName}
             </div>
           ))}
       </div>

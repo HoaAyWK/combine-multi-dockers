@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/button/Button";
 import DashboardHeading from "../dashboard/DashboardHeding";
 import InstructorTable from "../instructor/InstructorTable";
 import { toast } from "react-toastify";
-import Api from "../../api/Api";
+import { useDispatch, useSelector } from "react-redux";
+import { getInstructor } from "./instructorSlice";
+import { action_status } from "../../constant/status";
+import LoadingPage from "../../components/loading/LoadingPage";
 
 const Instructor = () => {
   const navigate = useNavigate();
-  const [instructor, setInstructor] = useState([]);
+  const dispatch = useDispatch();
+  const { status, instructor } = useSelector((state) => state.instructor);
   useEffect(() => {
     if (
       localStorage.getItem("jwt") === null &&
@@ -20,28 +24,31 @@ const Instructor = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await Api.getInstructor();
-        setInstructor(response);
-      } catch (error) {
-        console.log(error.message);
-      }
+    try {
+      dispatch(getInstructor());
+    } catch (error) {
+      console.log(error.message);
     }
-    fetchData();
   }, []);
+
   return (
     <div>
       <DashboardHeading
         title="Instructor"
         desc="Manage your instructor"
       ></DashboardHeading>
-      <div className="flex justify-end mb-10">
-        <Button kind="ghost" to="/manage/add-user">
-          Add new instructor
-        </Button>
-      </div>
-      <InstructorTable data={instructor}></InstructorTable>
+      {status === action_status.LOADING && <LoadingPage />}
+      {status === action_status.SUCCEEDED && (
+        <>
+          {" "}
+          <div className="flex justify-end mb-10">
+            <Button kind="ghost" to="/manage/add-user">
+              Add new instructor
+            </Button>
+          </div>
+          <InstructorTable data={instructor}></InstructorTable>
+        </>
+      )}
     </div>
   );
 };

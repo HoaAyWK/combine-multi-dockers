@@ -1,16 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import Api from "../../api/Api";
+import enrollmentApi from "../../api/enrollmentApi";
 import { action_status } from "../../constant/status";
 
-export const getEnrollment = createAsyncThunk("enrollment", async () => {
-  const response = await Api.getEnrollments();
+export const getEnrollment = createAsyncThunk("getEnrollment", async () => {
+  const response = await enrollmentApi.getEnrollments();
   return response;
 });
 
 export const getEnrollmentId = createAsyncThunk(
-  "enrollmentId",
+  "getEnrollmentId",
   async (payload) => {
-    const response = await Api.getEnrollmentsId(payload);
+    const response = await enrollmentApi.getEnrollmentsId(payload);
     return response;
   }
 );
@@ -18,15 +18,15 @@ export const getEnrollmentId = createAsyncThunk(
 export const createEnrollment = createAsyncThunk(
   "createEnrollment",
   async (payload) => {
-    const response = await Api.createEnrollments(payload);
+    const response = await enrollmentApi.createEnrollments(payload);
     return response;
   }
 );
 
 export const deleteEnrollment = createAsyncThunk(
   "deleteEnrollment",
-  async () => {
-    const response = await Api.deleteEnrollments();
+  async (payload) => {
+    const response = await enrollmentApi.deleteEnrollments(payload);
     return response;
   }
 );
@@ -38,13 +38,13 @@ const enrollmentSlice = createSlice({
     statusId: action_status.IDLE,
     enrollment: {},
     enrollmentId: {},
-    add: false,
-    delete: false,
+    addEnrollment: false,
+    deleteEnrollment: false,
   },
   reducers: {
     refresh: (state, action) => {
-      state.add = false;
-      state.delete = false;
+      state.addEnrollment = false;
+      state.deleteEnrollment = false;
     },
   },
   extraReducers: {
@@ -69,14 +69,15 @@ const enrollmentSlice = createSlice({
       state.statusId = action_status.FAILED;
     },
     [createEnrollment.fulfilled]: (state, action) => {
-      state.add = true;
+      state.addEnrollment = true;
     },
     [deleteEnrollment.fulfilled]: (state, action) => {
-      state.delete = true;
+      state.deleteEnrollment = true;
     },
   },
 });
 
 const { actions, reducer } = enrollmentSlice;
+export const { refresh } = actions;
 
 export default reducer;

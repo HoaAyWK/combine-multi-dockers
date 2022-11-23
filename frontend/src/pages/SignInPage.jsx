@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthenticationPage from "./AuthenticationPage";
 import { useForm } from "react-hook-form";
 import Field from "../components/field/Field";
@@ -12,7 +12,8 @@ import { toast } from "react-toastify";
 import IconEyeOpen from "../components/icon/IconEyeOpen";
 import IconEyeClose from "../components/icon/IconEyeClose";
 import InputPasswordToggle from "../components/input/InputPasswordToggle";
-import Api from "../api/Api";
+import { useDispatch } from "react-redux";
+import { login } from "../module/authSlice";
 
 const schema = yup.object({
   username: yup
@@ -36,19 +37,18 @@ const SignInPage = () => {
     mode: "onChange",
     resolver: yupResolver(schema),
   });
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "SignIn Page";
-  });
+  }, []);
 
   const handleSignIn = async (values) => {
     if (!isValid) return;
     try {
-      const response = await Api.login(values);
-      localStorage.setItem("jwt", response.token);
-      localStorage.setItem("user", response.username);
+      dispatch(login(values));
       toast.success("Sign In Successfully!!!", { pauseOnHover: false });
       navigate("/manage-enrollments");
       reset({
