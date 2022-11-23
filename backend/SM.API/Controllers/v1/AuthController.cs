@@ -34,9 +34,13 @@ public class AuthController : BaseController
         if (result.Succeeded)
         {
             response.Token = await _tokenClaimsService.GetTokenAsync(request.Username);
+
+            return Ok(response);
         }
 
-        return Ok(response);
+        response.Messages = new List<string>{ "Invalid email or password" };
+        
+        return BadRequest(response);
     }
 
     [HttpPost("register")]
