@@ -17,4 +17,6 @@ public class CreateInstructorRequest
     public string Phone { get; set; } = default!;
 
     public DateTime DateOfBirth { get; set; }
+
+    public IFormFile? Avatar { get; set; }
 }

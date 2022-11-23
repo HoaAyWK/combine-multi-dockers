@@ -11,7 +11,8 @@ public interface IInstructorService
         string lastName,
         string email,
         string phone,
-        DateTime birthDay);
+        DateTime birthDay,
+        string? avatar);
 
     Task<Instructor?> UpdateAsync(
         int id,
