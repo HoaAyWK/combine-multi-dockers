@@ -39,7 +39,7 @@ import {
   SimpleTableListToolbar,
   MoreMenu,
 } from "../components/tables";
-import { fDateTimeSuffix } from "../utils/formatTime";
+import { fDate, fDateTimeSuffix } from "../utils/formatTime";
 import { clearMessage } from "../app/slices/messageSlice";
 import MoreMenuItem from "../components/tables/MoreMenuItem";
 import AlertDialog from "../components/AlertDialog";
@@ -57,6 +57,7 @@ const TABLE_HEAD = [
   { id: "name", label: "Full Name", alignRight: false },
   { id: "email", label: "email", alignRight: false },
   { id: "dateOfBirth", label: "Birth day", alignRight: false },
+  { id: "gender", label: "Gender", alignRight: false },
   { id: "", label: "", alignRight: false },
 ];
 
@@ -309,6 +310,7 @@ const Student = () => {
                         lastName,
                         email,
                         dateOfBirth,
+                        gender,
                         avatar,
                       } = row;
 
@@ -341,8 +343,9 @@ const Student = () => {
                           </TableCell>
                           <TableCell align="left">{email}</TableCell>
                           <TableCell align="left">
-                            {fDateTimeSuffix(dateOfBirth)}
+                            {fDate(dateOfBirth)}
                           </TableCell>
+                          <TableCell align="left">{gender}</TableCell>
                           <TableCell align="right">
                             <MoreMenu>
                               <MoreMenuItem

@@ -15,7 +15,7 @@ export const store = configureStore({
     message: messageReducer,
     students: studentReducer,
     courses: courseReducer,
-    enrolments: enrollmentReducer,
+    enrollments: enrollmentReducer,
     grades: gradeReducer,
     instructors: instructorReducer,
     semesters: semesterReducer,

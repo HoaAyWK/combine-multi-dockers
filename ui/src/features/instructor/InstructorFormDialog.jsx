@@ -41,12 +41,12 @@ const LoadingButtonSuccessStyle = styled(LoadingButton)(({ theme }) => ({
   color: "#fff",
 }));
 
-const genders = ["Male", "Female"];
+const status = ["Active", "UnActive"];
 
-const StudentFormDialog = (props) => {
+const InstructorFormDialog = (props) => {
   const {
-    student,
-    studentAction,
+    instructor,
+    instructorAction,
     dialogTitle,
     dialogContent,
     open,
@@ -54,12 +54,14 @@ const StudentFormDialog = (props) => {
   } = props;
 
   const dispatch = useDispatch();
-  const StudentSchema = Yup.object().shape({
+  const InstructorSchema = Yup.object().shape({
     firstName: Yup.string().required("First name is required"),
     lastName: Yup.string().required("Last name is required"),
     email: Yup.string().required("Email is required"),
+    phone: Yup.string().required("Phone is required"),
     dateOfBirth: Yup.string().required("Date of birth is required"),
-    gender: Yup.string().required(),
+    dateJoin: Yup.string().required("Date join is required"),
+    status: Yup.string().required("Status is required"),
     avatar: Yup.mixed(),
     id: Yup.string(),
   });
@@ -68,23 +70,26 @@ const StudentFormDialog = (props) => {
     firstName: "",
     lastName: "",
     email: "",
-    gender: "Male",
+    phone: "",
     dateOfBirth: "",
-    avatar: null,
+    dateJoin: "",
+    status: "active",
     id: "",
   };
 
-  if (student) {
-    defaultValues.firstName = student.firstName;
-    defaultValues.lastName = student.lastName;
-    defaultValues.id = student.id;
-    defaultValues.email = student.email;
-    defaultValues.gender = student.gender;
-    defaultValues.dateOfBirth = student.dateOfBirth;
+  if (instructor) {
+    defaultValues.firstName = instructor.firstName;
+    defaultValues.lastName = instructor.lastName;
+    defaultValues.email = instructor.email;
+    defaultValues.phone = instructor.phone;
+    defaultValues.dateOfBirth = instructor.dateOfBirth;
+    defaultValues.dateJoin = instructor.dateJoin;
+    defaultValues.status = instructor.status;
+    defaultValues.id = instructor.id;
   }
 
   const methods = useForm({
-    resolver: yupResolver(StudentSchema),
+    resolver: yupResolver(InstructorSchema),
     defaultValues,
   });
 
@@ -92,7 +97,7 @@ const StudentFormDialog = (props) => {
 
   const onSubmit = async (data) => {
     console.log(data);
-    dispatch(studentAction(data));
+    dispatch(instructorAction(data));
     handleClose();
   };
 
@@ -106,12 +111,15 @@ const StudentFormDialog = (props) => {
             <RHFTextField name="firstName" label="First Name *" fullWidth />
             <RHFTextField name="lastName" label="Last Name *" fullWidth />
             <RHFTextField name="email" label="Email *" fullWidth />
+            <RHFTextField name="phone" label="Phone *" fullWidth />
             <RHFDate name="dateOfBirth" label="Date Of Birth *" fullWidth />
+            <RHFDate name="dateJoin" label=" Date Join" fullWidth />
+
             <RHFRadioGroup
-              name="gender"
-              id="radios-gender"
-              label="Gender"
-              items={genders}
+              name="status"
+              id="radios-status"
+              label="Status"
+              items={status}
               row
             />
             <Box
@@ -125,7 +133,9 @@ const StudentFormDialog = (props) => {
               <AvatarUploader
                 name="avatar"
                 imageUrl={
-                  student?.avatar ? `${BASE_S3_URL}${student?.avatar}` : null
+                  instructor?.avatar
+                    ? `${BASE_S3_URL}${instructor?.avatar}`
+                    : null
                 }
               />
             </Box>
@@ -142,4 +152,4 @@ const StudentFormDialog = (props) => {
   );
 };
 
-export default StudentFormDialog;
+export default InstructorFormDialog;

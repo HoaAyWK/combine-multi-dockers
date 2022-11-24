@@ -14,11 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 
-import {
-  RHFTextField,
-  FormProvider,
-  RHFRadioGroup,
-} from "../../components/hook-form";
+import { RHFTextField, FormProvider } from "../../components/hook-form";
 import { Stack } from "@mui/system";
 import AvatarUploader from "../../components/AvatarUploader";
 import { BASE_S3_URL } from "../../app/constants";
@@ -41,12 +37,10 @@ const LoadingButtonSuccessStyle = styled(LoadingButton)(({ theme }) => ({
   color: "#fff",
 }));
 
-const genders = ["Male", "Female"];
-
-const StudentFormDialog = (props) => {
+const SemesterFormDialog = (props) => {
   const {
-    student,
-    studentAction,
+    semester,
+    semesterAction,
     dialogTitle,
     dialogContent,
     open,
@@ -54,37 +48,23 @@ const StudentFormDialog = (props) => {
   } = props;
 
   const dispatch = useDispatch();
-  const StudentSchema = Yup.object().shape({
-    firstName: Yup.string().required("First name is required"),
-    lastName: Yup.string().required("Last name is required"),
-    email: Yup.string().required("Email is required"),
-    dateOfBirth: Yup.string().required("Date of birth is required"),
-    gender: Yup.string().required(),
-    avatar: Yup.mixed(),
+  const SemesterSchema = Yup.object().shape({
+    name: Yup.string().required("Semester is required"),
     id: Yup.string(),
   });
 
   const defaultValues = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    gender: "Male",
-    dateOfBirth: "",
-    avatar: null,
+    name: "",
     id: "",
   };
 
-  if (student) {
-    defaultValues.firstName = student.firstName;
-    defaultValues.lastName = student.lastName;
-    defaultValues.id = student.id;
-    defaultValues.email = student.email;
-    defaultValues.gender = student.gender;
-    defaultValues.dateOfBirth = student.dateOfBirth;
+  if (semester) {
+    defaultValues.name = semester.name;
+    defaultValues.id = semester.id;
   }
 
   const methods = useForm({
-    resolver: yupResolver(StudentSchema),
+    resolver: yupResolver(SemesterSchema),
     defaultValues,
   });
 
@@ -92,7 +72,7 @@ const StudentFormDialog = (props) => {
 
   const onSubmit = async (data) => {
     console.log(data);
-    dispatch(studentAction(data));
+    dispatch(semesterAction(data));
     handleClose();
   };
 
@@ -103,32 +83,7 @@ const StudentFormDialog = (props) => {
       <Box sx={{ padding: 2 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
-            <RHFTextField name="firstName" label="First Name *" fullWidth />
-            <RHFTextField name="lastName" label="Last Name *" fullWidth />
-            <RHFTextField name="email" label="Email *" fullWidth />
-            <RHFDate name="dateOfBirth" label="Date Of Birth *" fullWidth />
-            <RHFRadioGroup
-              name="gender"
-              id="radios-gender"
-              label="Gender"
-              items={genders}
-              row
-            />
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBlock: 2,
-              }}
-            >
-              <AvatarUploader
-                name="avatar"
-                imageUrl={
-                  student?.avatar ? `${BASE_S3_URL}${student?.avatar}` : null
-                }
-              />
-            </Box>
+            <RHFTextField name="name" label="Semester *" fullWidth />
           </Stack>
           <DialogActions>
             <ButtonStyle onClick={handleClose}>Cancel</ButtonStyle>
@@ -142,4 +97,4 @@ const StudentFormDialog = (props) => {
   );
 };
 
-export default StudentFormDialog;
+export default SemesterFormDialog;

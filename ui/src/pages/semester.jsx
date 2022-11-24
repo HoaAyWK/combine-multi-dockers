@@ -26,24 +26,24 @@ import Page from "../components/Page";
 import Iconify from "../components/Iconify";
 import SearchNotFound from "../components/SearchNotFound";
 import {
-  createInstructor,
-  updateInstructor,
-  deleteInstructor,
-  getInstructors,
+  createSemester,
+  updateSemester,
+  deleteSemester,
   refresh,
-  selectAllInstructors,
-} from "../app/slices/instructorSlice";
-import { action_status } from "../app/constants";
+  getSemesters,
+  selectAllSemesters,
+} from "../app/slices/semesterSlice";
+import { action_status, BASE_S3_URL } from "../app/constants";
 import {
   SimpleTableListHead,
   SimpleTableListToolbar,
   MoreMenu,
 } from "../components/tables";
-import { fDate } from "../utils/formatTime";
+import { fDate, fDateTimeSuffix } from "../utils/formatTime";
 import { clearMessage } from "../app/slices/messageSlice";
 import MoreMenuItem from "../components/tables/MoreMenuItem";
 import AlertDialog from "../components/AlertDialog";
-import InstructorFormDialog from "../features/instructor/InstructorFormDialog";
+import SemesterFormDialog from "../features/semester/SemesterFormDialog";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.success.dark,
@@ -54,12 +54,7 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-  { id: "name", label: "Full Name", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "phone", label: "Phone", alignRight: false },
-  { id: "dateOfBirth", label: "Birth day", alignRight: false },
-  { id: "dateJoin", label: "Date Join", alignRight: false },
-  { id: "status", label: "Status", alignRight: false },
+  { id: "name", label: "Semester", alignRight: false },
   { id: "", label: "", alignRight: false },
 ];
 
@@ -87,17 +82,14 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(
-      array,
-      (item) =>
-        item.firstName.toLowerCase().includes(query.toLowerCase()) ||
-        item.lastName.toLowerCase().includes(query.toLowerCase())
+    return filter(array, (item) =>
+      item.name.toLowerCase().includes(query.toLowerCase())
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-const Instructor = () => {
+const Semester = () => {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState("asc");
@@ -116,17 +108,17 @@ const Instructor = () => {
 
   const dispatch = useDispatch();
 
-  const instructors = useSelector(selectAllInstructors);
+  const semesters = useSelector(selectAllSemesters);
 
   const { isAdded, isDeleted, isUpdated } = useSelector(
-    (state) => state.instructors
+    (state) => state.semesters
   );
 
   const { message } = useSelector((state) => state.message);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { status } = useSelector((state) => state.instructors);
+  const { status } = useSelector((state) => state.semesters);
 
   useEffect(() => {
     if (isAdded) {
@@ -137,7 +129,7 @@ const Instructor = () => {
 
   useEffect(() => {
     if (status === action_status.IDLE) {
-      dispatch(getInstructors());
+      dispatch(getSemesters());
     }
     dispatch(clearMessage());
     dispatch(refresh());
@@ -146,7 +138,7 @@ const Instructor = () => {
   useEffect(() => {
     if (isUpdated) {
       enqueueSnackbar("Updated successfully", { variant: "success" });
-      dispatch(getInstructors());
+      dispatch(getSemesters());
       dispatch(refresh());
     }
   }, [isUpdated, enqueueSnackbar, dispatch]);
@@ -186,7 +178,7 @@ const Instructor = () => {
   };
 
   const handleDelete = (id) => {
-    dispatch(deleteInstructor(id));
+    dispatch(deleteSemester(id));
   };
 
   const handleRequestSort = (event, property) => {
@@ -214,7 +206,7 @@ const Instructor = () => {
 
   if (status === action_status.LOADING) {
     return (
-      <Page title="Instructor">
+      <Page title="Semester">
         <Container maxWidth="xl">
           <Box
             sx={{
@@ -232,7 +224,7 @@ const Instructor = () => {
     );
   } else if (status === action_status.FAILED) {
     return (
-      <Page title="Instructor">
+      <Page title="Semester">
         <Container maxWidth="xl">
           <Box
             sx={{
@@ -250,18 +242,20 @@ const Instructor = () => {
     );
   } else if (status === action_status.SUCCEEDED) {
     const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - instructors.length) : 0;
+      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - semesters.length) : 0;
 
-    const filteredInstructors = applySortFilter(
-      instructors,
+    const filteredSemesters = applySortFilter(
+      semesters,
       getComparator(order, orderBy),
       filterName
     );
 
-    const isInstructorNotFound = filteredInstructors.length === 0;
+    const isSemesterNotFound = filteredSemesters.length === 0;
+
+    console.log("Semester:", semesters);
 
     return (
-      <Page title="Instructor">
+      <Page title="Semester">
         <Container maxWidth="xl">
           <Stack
             direction="row"
@@ -269,7 +263,7 @@ const Instructor = () => {
             justifyContent="space-between"
             mb={5}
           >
-            <Typography variant="h4">Instructor</Typography>
+            <Typography variant="h4">Semester</Typography>
             <ButtonStyle
               variant="contained"
               onClick={handleClickOpenCreateFormDialog}
@@ -277,21 +271,21 @@ const Instructor = () => {
                 <Iconify icon="eva:plus-fill" style={{ color: "white" }} />
               }
             >
-              New Instructor
+              New Semester
             </ButtonStyle>
           </Stack>
-          <InstructorFormDialog
+          <SemesterFormDialog
             open={openCreateFormDialog}
             handleClose={handleClickCloseCreateFormDialog}
-            dialogTitle="Create Instructor"
-            dialogContent="Create a new Instructor"
-            instructorAction={createInstructor}
+            dialogTitle="Create Semester"
+            dialogContent="Create a new Semester"
+            studentAction={createSemester}
           />
           <Card>
             <SimpleTableListToolbar
               filterName={filterName}
               onFilterName={handleFilterByName}
-              title="Instructor"
+              title="Semester"
             />
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -299,56 +293,18 @@ const Instructor = () => {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={instructors.length}
+                  rowCount={semesters.length}
                   onRequestSort={handleRequestSort}
                 />
                 <TableBody>
-                  {filteredInstructors
+                  {filteredSemesters
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const {
-                        id,
-                        firstName,
-                        lastName,
-                        email,
-                        phone,
-                        dateOfBirth,
-                        dateJoin,
-                        status,
-                        avatar,
-                      } = row;
+                      const { id, name } = row;
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
-                          <TableCell align="left" width={300}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                            >
-                              {avatar ? (
-                                <Avatar src={avatar} alt={`${firstName}`} />
-                              ) : (
-                                <LetterAvatar name={`${firstName}`} />
-                              )}
-                              <Typography
-                                variant="body1"
-                                sx={{
-                                  marginInlineStart: 1,
-                                }}
-                              >
-                                {`${firstName} ${lastName}`}
-                              </Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell align="left">{email}</TableCell>
-                          <TableCell align="left">{phone}</TableCell>
-                          <TableCell align="left">
-                            {fDate(dateOfBirth)}
-                          </TableCell>
-                          <TableCell align="left">{fDate(dateJoin)}</TableCell>
-                          <TableCell align="left">{status}</TableCell>
+                          <TableCell align="left">{name}</TableCell>
                           <TableCell align="right">
                             <MoreMenu>
                               <MoreMenuItem
@@ -366,18 +322,18 @@ const Instructor = () => {
                                 itemId={id}
                                 open={open}
                                 handleClose={handleClose}
-                                title="Delete Instructor"
-                                content="Are you sure to delete this instructor"
+                                title="Delete Semester"
+                                content="Are you sure to delete this semester"
                                 handleConfirm={handleDelete}
                                 color="error"
                               />
-                              <InstructorFormDialog
+                              <SemesterFormDialog
                                 open={openUpdateFormDialog}
                                 handleClose={handleClickCloseUpdateFormDialog}
-                                dialogTitle="Edit Instructor"
-                                dialogContent="Update Instructor"
-                                instructor={row}
-                                instructorAction={updateInstructor}
+                                dialogTitle="Edit Semester"
+                                dialogContent="Update semester"
+                                semester={row}
+                                semesterAction={updateSemester}
                               />
                             </MoreMenu>
                           </TableCell>
@@ -391,7 +347,7 @@ const Instructor = () => {
                   )}
                 </TableBody>
 
-                {isInstructorNotFound && (
+                {isSemesterNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -405,7 +361,7 @@ const Instructor = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={instructors.length}
+              count={semesters.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -418,4 +374,4 @@ const Instructor = () => {
   }
 };
 
-export default Instructor;
+export default Semester;
