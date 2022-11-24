@@ -12,11 +12,13 @@ namespace SM.API.Controllers.v1;
 public class EnrollmentsController : BaseController
 {
     private readonly IEnrollmentService _enrollmentService;
+    private readonly IGradeService _gradeService;
     private readonly IMapper _mapper;
 
-    public EnrollmentsController(IEnrollmentService enrollmentService, IMapper mapper)
+    public EnrollmentsController(IEnrollmentService enrollmentService, IGradeService gradeService, IMapper mapper)
     {
         _enrollmentService = enrollmentService;
+        _gradeService = gradeService;
         _mapper = mapper;
     }
 
@@ -35,7 +37,7 @@ public class EnrollmentsController : BaseController
         var enrollment = await _enrollmentService.GetByIdAsync(id);
 
         if (enrollment == null) {
-            return BadRequest("Enrollment not found");
+            return BadRequest(new { message = "Enrollment not found" });
         }
 
         var enrollmentDto = _mapper.Map<EnrollmentDto>(enrollment);
@@ -53,7 +55,7 @@ public class EnrollmentsController : BaseController
 
         if (result == null)
         {
-            return BadRequest($"Enrollment with studentId '{request.StudentId}' and courseId '{request.CourseId}' already exists");
+            return BadRequest(new { message = $"Enrollment with studentId '{request.StudentId}' and courseId '{request.CourseId}' already exists" });
         }
 
         var enrollmentDto = _mapper.Map<EnrollmentDto>(result);
@@ -65,13 +67,25 @@ public class EnrollmentsController : BaseController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _enrollmentService.DeleteAsync(id);
+        var enrollment = await _enrollmentService.GetByIdAsync(id);
 
-        if (result == EnrollmentMessages.Deleted)
+        if (enrollment == null)
         {
-            return Ok(new DeleteEnrollmentResponse());
+            return BadRequest(new { message = "Enrollment not found" });
+        }
+        var grade = await _gradeService.GetByCourseIdAndStudentId(enrollment.CourseId, enrollment.StudentId);
+
+        if (grade != null)
+        {
+            return BadRequest(
+                new {
+                    message = $"Please delete Grade with courseId '{enrollment.CourseId}' and studentId '{enrollment.StudentId}' first!"
+                }
+            );
         }
 
-        return BadRequest(result);
+        var result = await _enrollmentService.DeleteAsync(id);
+        
+        return Ok(new DeleteEnrollmentResponse());
     }
 }

@@ -21,6 +21,7 @@ import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 
+import Label from '../components/Label';
 import LetterAvatar from "../components/LetterAvatar";
 import Page from "../components/Page";
 import Iconify from "../components/Iconify";
@@ -33,7 +34,7 @@ import {
   refresh,
   selectAllInstructors,
 } from "../app/slices/instructorSlice";
-import { action_status } from "../app/constants";
+import { action_status, BASE_S3_URL } from "../app/constants";
 import {
   SimpleTableListHead,
   SimpleTableListToolbar,
@@ -54,7 +55,7 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-  { id: "name", label: "Full Name", alignRight: false },
+  { id: "firstName", label: "Full Name", alignRight: false },
   { id: "email", label: "Email", alignRight: false },
   { id: "phone", label: "Phone", alignRight: false },
   { id: "dateOfBirth", label: "Birth day", alignRight: false },
@@ -328,7 +329,7 @@ const Instructor = () => {
                               }}
                             >
                               {avatar ? (
-                                <Avatar src={avatar} alt={`${firstName}`} />
+                                <Avatar src={`${BASE_S3_URL}${avatar}`} alt={`${firstName}`} />
                               ) : (
                                 <LetterAvatar name={`${firstName}`} />
                               )}
@@ -348,7 +349,11 @@ const Instructor = () => {
                             {fDate(dateOfBirth)}
                           </TableCell>
                           <TableCell align="left">{fDate(dateJoin)}</TableCell>
-                          <TableCell align="left">{status}</TableCell>
+                          <TableCell align="left">
+                            <Label variant="ghost" color={status === 'Active' ? 'success' : 'error' }>
+                              {status}
+                            </Label>
+                          </TableCell>
                           <TableCell align="right">
                             <MoreMenu>
                               <MoreMenuItem

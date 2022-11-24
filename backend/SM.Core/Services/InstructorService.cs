@@ -45,6 +45,8 @@ public class InstructorService : IInstructorService
         if (result == null)
             return null;
 
+        await _unitOfWork.SaveChangesAsync();
+
         return result;
     }
 

@@ -23,6 +23,21 @@ public class CourseService : ICourseService
         return await _unitOfWork.Courses.GetByIdAsync(courseId);
     }
 
+    public async Task<bool> IsAnyCourseWithInstructorAsync(int instructorId)
+    {
+        return await _unitOfWork.Courses.IsAnyCourseWithInstructorAsync(instructorId);
+    }
+
+    public async Task<bool> IsAnyCourseWithSemesterAsync(int semesterId)
+    {
+        return await _unitOfWork.Courses.IsAnyCourseWithSemesterAsync(semesterId);
+    }
+
+    public async Task<bool> IsAnyCourseWithSubjectAsync(int subjectId)
+    {
+        return await _unitOfWork.Courses.IsAnyCourseWithSubjectAsync(subjectId);
+    }
+
     public async Task<Course?> CreateAsync(Course course)
     {
         var result = await _unitOfWork.Courses.AddAsync(course);

@@ -13,6 +13,7 @@ const studentsAdapter = createEntityAdapter();
 const initialState = studentsAdapter.getInitialState({
   status: action_status.IDLE,
   error: null,
+  updateStatus: action_status.IDLE,
   isUpdated: false,
   isAdded: false,
   isDeleted: false,
@@ -115,6 +116,7 @@ const studentslice = createSlice({
       state.isUpdated = false;
       state.isAdded = false;
       state.isDeleted = false;
+      state.updateStatus = action_status.IDLE;
     },
   },
   extraReducers: (builder) => {
@@ -130,18 +132,28 @@ const studentslice = createSlice({
         state.status = action_status.FAILED;
         state.error = action.error;
       })
+      .addCase(createStudent.pending, (state, action) => {
+        state.updateStatus = action_status.LOADING;
+      })
       .addCase(createStudent.fulfilled, (state, action) => {
         studentsAdapter.addOne(state, action.payload);
+        state.updateStatus = action_status.SUCCEEDED;
         state.isAdded = true;
       })
       .addCase(createStudent.rejected, (state, action) => {
         state.error = action.error;
+        state.updateStatus = action_status.FAILED;
+      })
+      .addCase(updateStudent.pending, (state, action) => {
+        state.updateStatus = action_status.LOADING;
       })
       .addCase(updateStudent.fulfilled, (state, action) => {
         state.isUpdated = true;
+        state.updateStatus = action_status.SUCCEEDED;
       })
       .addCase(updateStudent.rejected, (state, action) => {
         state.error = action.error;
+        state.updateStatus = action_status.FAILED;
       })
       .addCase(deleteStudent.pending, (state, action) => {
         state.isDeleted = false;

@@ -6,12 +6,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
 } from "@mui/material";
 import * as Yup from "yup";
 import { styled } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 
 import {
@@ -21,8 +22,9 @@ import {
 } from "../../components/hook-form";
 import { Stack } from "@mui/system";
 import AvatarUploader from "../../components/AvatarUploader";
-import { BASE_S3_URL } from "../../app/constants";
+import { action_status, BASE_S3_URL } from "../../app/constants";
 import RHFDate from "../../components/hook-form/RHFDate";
+import { useEffect } from "react";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.grey[500_24],
@@ -41,7 +43,7 @@ const LoadingButtonSuccessStyle = styled(LoadingButton)(({ theme }) => ({
   color: "#fff",
 }));
 
-const status = ["Active", "UnActive"];
+const status = ["Active", "Unactive"];
 
 const InstructorFormDialog = (props) => {
   const {
@@ -53,6 +55,8 @@ const InstructorFormDialog = (props) => {
     handleClose,
   } = props;
 
+  const { updateStatus } = useSelector((state) => state.instructors);
+
   const dispatch = useDispatch();
   const InstructorSchema = Yup.object().shape({
     firstName: Yup.string().required("First name is required"),
@@ -60,7 +64,6 @@ const InstructorFormDialog = (props) => {
     email: Yup.string().required("Email is required"),
     phone: Yup.string().required("Phone is required"),
     dateOfBirth: Yup.string().required("Date of birth is required"),
-    dateJoin: Yup.string().required("Date join is required"),
     status: Yup.string().required("Status is required"),
     avatar: Yup.mixed(),
     id: Yup.string(),
@@ -72,8 +75,7 @@ const InstructorFormDialog = (props) => {
     email: "",
     phone: "",
     dateOfBirth: "",
-    dateJoin: "",
-    status: "active",
+    status: "Active",
     id: "",
   };
 
@@ -83,10 +85,14 @@ const InstructorFormDialog = (props) => {
     defaultValues.email = instructor.email;
     defaultValues.phone = instructor.phone;
     defaultValues.dateOfBirth = instructor.dateOfBirth;
-    defaultValues.dateJoin = instructor.dateJoin;
-    defaultValues.status = instructor.status;
     defaultValues.id = instructor.id;
   }
+
+  useEffect(() => {
+    if (updateStatus === action_status.SUCCEEDED) {
+      handleClose();
+    }
+  }, [updateStatus]);
 
   const methods = useForm({
     resolver: yupResolver(InstructorSchema),
@@ -98,7 +104,6 @@ const InstructorFormDialog = (props) => {
   const onSubmit = async (data) => {
     console.log(data);
     dispatch(instructorAction(data));
-    handleClose();
   };
 
   return (
@@ -108,12 +113,21 @@ const InstructorFormDialog = (props) => {
       <Box sx={{ padding: 2 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
-            <RHFTextField name="firstName" label="First Name *" fullWidth />
-            <RHFTextField name="lastName" label="Last Name *" fullWidth />
-            <RHFTextField name="email" label="Email *" fullWidth />
-            <RHFTextField name="phone" label="Phone *" fullWidth />
+            <Grid container spacing={1} >
+              <Grid item xs={12} md={6}>
+                <RHFTextField name="firstName" label="First Name *" fullWidth />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <RHFTextField name="lastName" label="Last Name *" fullWidth />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <RHFTextField name="email" label="Email *" fullWidth />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <RHFTextField name="phone" label="Phone *" fullWidth />
+              </Grid>
+            </Grid>
             <RHFDate name="dateOfBirth" label="Date Of Birth *" fullWidth />
-            <RHFDate name="dateJoin" label=" Date Join" fullWidth />
 
             <RHFRadioGroup
               name="status"
@@ -142,7 +156,11 @@ const InstructorFormDialog = (props) => {
           </Stack>
           <DialogActions>
             <ButtonStyle onClick={handleClose}>Cancel</ButtonStyle>
-            <LoadingButtonSuccessStyle type="submit" variant="contained">
+            <LoadingButtonSuccessStyle
+              type="submit"
+              variant="contained"
+              loading={updateStatus === action_status.LOADING ? true : false}
+            >
               Save
             </LoadingButtonSuccessStyle>
           </DialogActions>

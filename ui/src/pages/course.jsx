@@ -44,6 +44,9 @@ import { clearMessage } from "../app/slices/messageSlice";
 import MoreMenuItem from "../components/tables/MoreMenuItem";
 import AlertDialog from "../components/AlertDialog";
 import CourseFormDialog from "../features/course/CourseFormDialog";
+import { getSemesters } from "../app/slices/semesterSlice";
+import { getInstructors } from "../app/slices/instructorSlice";
+import { getSubjects } from "../app/slices/subjectSlice";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.success.dark,
@@ -54,8 +57,8 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-  { id: "fullname", label: "FullName", alignRight: false },
-  { id: "subject", label: "Subject", alignRight: false },
+  { id: "id", label: "Course", alignRight: false },
+  { id: "instructor", label: "Instructor", alignRight: false },
   { id: "semester", label: "Semester", alignRight: false },
   { id: "", label: "", alignRight: false },
 ];
@@ -119,6 +122,10 @@ const Course = () => {
     (state) => state.courses
   );
 
+  const { status: instructorStatus } = useSelector((state) => state.instructors);
+  const { status: semesterStatus } = useSelector((state) => state.semesters);
+  const { status: subjectStatus } = useSelector((state) => state.subjects);
+
   const { message } = useSelector((state) => state.message);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -126,9 +133,24 @@ const Course = () => {
   const { status } = useSelector((state) => state.courses);
 
   useEffect(() => {
+    if (instructorStatus === action_status.IDLE) {
+      dispatch(getInstructors());
+    }
+
+  if (subjectStatus === action_status.IDLE) {
+    dispatch(getSubjects());
+  }
+
+  if (semesterStatus === action_status.IDLE) {
+    dispatch(getSemesters());
+  }
+  }, [instructorStatus, subjectStatus, semesterStatus]);
+
+  useEffect(() => {
     if (isAdded) {
       enqueueSnackbar("Created successfully", { variant: "success" });
       dispatch(refresh());
+      dispatch(getCourses());
     }
   }, [isAdded, enqueueSnackbar, dispatch]);
 
@@ -143,8 +165,8 @@ const Course = () => {
   useEffect(() => {
     if (isUpdated) {
       enqueueSnackbar("Updated successfully", { variant: "success" });
-      dispatch(getCourses());
       dispatch(refresh());
+      dispatch(getCourses());
     }
   }, [isUpdated, enqueueSnackbar, dispatch]);
 
@@ -309,6 +331,7 @@ const Course = () => {
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
+                          <TableCell align="left">{`Course ${id} - ${subject?.name}`}</TableCell>
                           <TableCell align="left" width={300}>
                             <Box
                               sx={{
@@ -336,9 +359,8 @@ const Course = () => {
                               </Typography>
                             </Box>
                           </TableCell>
-                          <TableCell align="left">{subject.name}</TableCell>
 
-                          <TableCell align="left">{semester.name}</TableCell>
+                          <TableCell align="left">{semester?.name}</TableCell>
                           <TableCell align="right">
                             <MoreMenu>
                               <MoreMenuItem

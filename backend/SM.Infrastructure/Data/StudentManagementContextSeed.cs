@@ -87,15 +87,15 @@ public class StudentManagementContextSeed
     {
         return new List<Student>
             {
-                new("Nguyen", "An", "123@gmail.com", new DateTime(2000, 10, 12), "Male"),
-                new("Le", "Hoang", "124@gmail.com", new DateTime(2001, 7, 30), "Male"),
-                new("Tran", "Long", "125@gmail.com", new DateTime(2002, 4, 20), "Male"),
-                new("Nguyen", "Duc", "126@gmail.com", new DateTime(2000, 10, 21), "Male"),
-                new("Do", "Binh", "127@gmail.com", new DateTime(2001, 12, 15), "Male"),
-                new("Nguyen", "Giang", "128@gmail.com", new DateTime(2003, 1, 11), "Male"),
-                new("Nguyen", "Loc", "129@gmail.com", new DateTime(2002, 8, 1), "Male"),
-                new("Tran", "Linh", "130@gmail.com", new DateTime(2001, 10, 5), "Male"),
-                new("Nguyen", "Quy", "131@gmail.com", new DateTime(2000, 11, 9), "Male"),
+                new("Nguyen", "An", "123@gmail.com", new DateTime(2000, 10, 12), "Male", null),
+                new("Le", "Hoang", "124@gmail.com", new DateTime(2001, 7, 30), "Male", null),
+                new("Tran", "Long", "125@gmail.com", new DateTime(2002, 4, 20), "Male", null),
+                new("Nguyen", "Duc", "126@gmail.com", new DateTime(2000, 10, 21), "Male", null),
+                new("Do", "Binh", "127@gmail.com", new DateTime(2001, 12, 15), "Male", null),
+                new("Nguyen", "Giang", "128@gmail.com", new DateTime(2003, 1, 11), "Male", null),
+                new("Nguyen", "Loc", "129@gmail.com", new DateTime(2002, 8, 1), "Male", null),
+                new("Tran", "Linh", "130@gmail.com", new DateTime(2001, 10, 5), "Male", null),
+                new("Nguyen", "Quy", "131@gmail.com", new DateTime(2000, 11, 9), "Male", null),
             };
     }
 
@@ -103,10 +103,10 @@ public class StudentManagementContextSeed
     {
         return new List<Instructor>
             {
-                new("Do", "Hop", "1@gmail.com", "123213213213", new DateTime(1980, 12, 21)),
-                new("Nguyen", "Dang", "2@gmail.com", "3131236762", new DateTime(1985, 5, 26)),
-                new("Tran", "Quang", "3@gmail.com", "01033123123", new DateTime(1977, 10, 22)),
-                new("Nguyen", "Cuong", "4@gmail.com", "87651567", new DateTime(1980, 4, 11)),
+                new("Do", "Hop", "1@gmail.com", "123213213213", new DateTime(1980, 12, 21), null),
+                new("Nguyen", "Dang", "2@gmail.com", "3131236762", new DateTime(1985, 5, 26), null),
+                new("Tran", "Quang", "3@gmail.com", "01033123123", new DateTime(1977, 10, 22), null),
+                new("Nguyen", "Cuong", "4@gmail.com", "87651567", new DateTime(1980, 4, 11), null),
             };
     }
 

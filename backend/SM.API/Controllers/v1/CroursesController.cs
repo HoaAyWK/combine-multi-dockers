@@ -12,11 +12,16 @@ namespace SM.API.Controllers.v1;
 public class CoursesController : BaseController
 {
     private readonly ICourseService _courseService;
+    private readonly IEnrollmentService _enrollmentService;
     private readonly IMapper _mapper;
 
-    public CoursesController(ICourseService courseService, IMapper mapper)
+    public CoursesController(
+        ICourseService courseService,
+        IEnrollmentService enrollmentService,
+        IMapper mapper)
     {
         _courseService = courseService;
+        _enrollmentService = enrollmentService;
         _mapper = mapper;
     }
 
@@ -35,7 +40,7 @@ public class CoursesController : BaseController
         var course = await _courseService.GetByIdAsync(id);
 
         if (course == null) {
-            return BadRequest("Course not found");
+            return BadRequest(new { message = "Course not found" });
         }
 
         var courseDto = _mapper.Map<CourseDto>(course);
@@ -63,7 +68,7 @@ public class CoursesController : BaseController
         var result = await _courseService.UpdateAsync(id, request.InstructorId, request.SubjectId, request.SemesterId);
 
         if (result == null)
-            return BadRequest("Course not found");
+            return BadRequest(new { message = "Course not found" });
         
         var courseDto = _mapper.Map<CourseDto>(result);
         
@@ -74,10 +79,17 @@ public class CoursesController : BaseController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Delete(int id)
     {
+        var enollmentWithCourse = await _enrollmentService.IsAnyEnrollmentWithCourseAsync(id);
+
+        if (enollmentWithCourse)
+        {
+            return BadRequest(new { message = "Another enrollment already references this course" });
+        }
+
         var result = await _courseService.DeleteAsync(id);
 
         if (result == false)
-            return BadRequest("Course not found");
+            return BadRequest(new { message = "Course not found" });
 
         return Ok(new DeleteCourseResponse());
     }

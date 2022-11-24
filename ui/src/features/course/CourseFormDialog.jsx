@@ -16,13 +16,9 @@ import { LoadingButton } from "@mui/lab";
 
 import { FormProvider, RHFSelect } from "../../components/hook-form";
 import { Stack } from "@mui/system";
-import { BASE_S3_URL } from "../../app/constants";
-import { getSubjects, selectAllSubjects } from "../../app/slices/subjectSlice";
-import {
-  getSemesters,
-  selectAllSemesters,
-} from "../../app/slices/semesterSlice";
-import { useEffect } from "react";
+import { selectAllSubjects } from "../../app/slices/subjectSlice";
+import { selectAllSemesters } from "../../app/slices/semesterSlice";
+import { selectAllInstructors } from "../../app/slices/instructorSlice";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.grey[500_24],
@@ -55,27 +51,27 @@ const CourseFormDialog = (props) => {
   const CourseSchema = Yup.object().shape({
     subjectId: Yup.number().required("Subject is required"),
     semesterId: Yup.number().required("Semester is required"),
+    instructorId: Yup.number().required("Instructor is required"),
     id: Yup.string(),
   });
 
   const defaultValues = {
     subjectId: "",
     semesterId: "",
+    instructorId: "",
     id: "",
   };
 
   const subjects = useSelector(selectAllSubjects);
   const semesters = useSelector(selectAllSemesters);
+  const instructors = useSelector(selectAllInstructors);
 
   if (course) {
     defaultValues.subjectId = course.subject.id;
     defaultValues.semesterId = course.semester.id;
+    defaultValues.instructorId = course.instructor.id;
     defaultValues.id = course.id;
   }
-
-  console.log("Course", course);
-  console.log("Subject", subjects);
-  console.log("Semester", semesters);
 
   const methods = useForm({
     resolver: yupResolver(CourseSchema),
@@ -83,11 +79,6 @@ const CourseFormDialog = (props) => {
   });
 
   const { handleSubmit } = methods;
-
-  useEffect(() => {
-    dispatch(getSubjects());
-    dispatch(getSemesters());
-  }, [dispatch]);
 
   const onSubmit = async (data) => {
     console.log("data", data);
@@ -113,6 +104,12 @@ const CourseFormDialog = (props) => {
               label="Semester *"
               id="semesterId"
               data={semesters}
+            />
+            <RHFSelect
+              name="instructorId"
+              label="Insructor *"
+              id="instructorId"
+              data={instructors}
             />
           </Stack>
           <DialogActions>

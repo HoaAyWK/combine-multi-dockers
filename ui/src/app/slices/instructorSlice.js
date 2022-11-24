@@ -13,6 +13,7 @@ const instructorsAdapter = createEntityAdapter();
 const initialState = instructorsAdapter.getInitialState({
   status: action_status.IDLE,
   error: null,
+  updateStatus: action_status.IDLE,
   isUpdated: false,
   isAdded: false,
   isDeleted: false,
@@ -22,7 +23,6 @@ export const getInstructors = createAsyncThunk(
   "intructors/getInstructors",
   async () => {
     const { data } = await api.get("/instructors");
-    console.log(data);
     return data;
   }
 );
@@ -59,11 +59,15 @@ export const updateInstructor = createAsyncThunk(
     try {
       const { data } = await api.put(
         `/instructors/update?id=${instructor.id}`,
-        instructor
+        instructor,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
 
       return data;
     } catch (error) {
+      console.log(error);
       const message =
         (error.response &&
           error.response.data &&
@@ -84,10 +88,9 @@ export const deleteInstructor = createAsyncThunk(
   "instructors/delete",
   async (id, thunkApi) => {
     try {
-      const { data } = await api.delete(`/instructors/${id}`);
+      await api.delete(`/instructors/${id}`);
 
-      data.id = id;
-      return data;
+      return id;
     } catch (error) {
       const message =
         (error.response &&
@@ -128,18 +131,28 @@ const instructorslice = createSlice({
         state.status = action_status.FAILED;
         state.error = action.error;
       })
+      .addCase(createInstructor.pending, (state, aciton) => {
+        state.updateStatus = action_status.LOADING;
+      })
       .addCase(createInstructor.fulfilled, (state, action) => {
         instructorsAdapter.addOne(state, action.payload);
         state.isAdded = true;
+        state.updateStatus = action_status.SUCCEEDED;
       })
       .addCase(createInstructor.rejected, (state, action) => {
         state.error = action.error;
+        state.updateStatus = action_status.FAILED;
+      })
+      .addCase(updateInstructor.pending, (state, action) => {
+        state.updateStatus = action_status.LOADING;
       })
       .addCase(updateInstructor.fulfilled, (state, action) => {
         state.isUpdated = true;
+        state.updateStatus = action_status.SUCCEEDED;
       })
       .addCase(updateInstructor.rejected, (state, action) => {
         state.error = action.error;
+        state.updateStatus = action_status.FAILED;
       })
       .addCase(deleteInstructor.pending, (state, action) => {
         state.isDeleted = false;

@@ -11,11 +11,16 @@ namespace SM.API.Controllers.v1;
 public class SemestersController : BaseController
 {
     private readonly ISemesterService _semesterService;
+    private readonly ICourseService _courseService;
     private readonly IMapper _mapper;
 
-    public SemestersController(ISemesterService semesterService, IMapper mapper)
+    public SemestersController(
+        ISemesterService semesterService,
+        ICourseService courseService,
+        IMapper mapper)
     {
         _semesterService = semesterService;
+        _courseService = courseService;
         _mapper = mapper;
     }
 
@@ -33,7 +38,7 @@ public class SemestersController : BaseController
         var result = await _semesterService.GetByIdAsync(id);
 
         if (result == null) {
-            return BadRequest("Semester not found");
+            return BadRequest(new { message = "Semester not found" });
         }
 
         return Ok(result);
@@ -49,7 +54,7 @@ public class SemestersController : BaseController
 
         if (result == null)
         {
-            return BadRequest($"Semester with name '{request.Name}' already exists");
+            return BadRequest(new { message = $"Semester with name '{request.Name}' already exists" });
         }
 
         return Ok(result);
@@ -63,7 +68,7 @@ public class SemestersController : BaseController
         var result = await _semesterService.UpdateAsync(id, request.Name);
 
         if (result == null)
-            return BadRequest("Semester not found");
+            return BadRequest(new { message = "Semester not found" });
         
         return Ok(result);
     }
@@ -72,11 +77,20 @@ public class SemestersController : BaseController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _semesterService.DeleteAsync(id);
+        var courseWithSemester = await _courseService.IsAnyCourseWithSemesterAsync(id);
 
-        if (result == false)
-            return BadRequest("Semester not found");
+        if (courseWithSemester)
+        {
+            return BadRequest(new { message = $"Another course already references this semster" });
+        }
 
+        var resutl = await _semesterService.DeleteAsync(id);
+
+        if (resutl == false)
+        {
+            return BadRequest(new { message = "Semester not found" });
+        }
+        
         return Ok(new DeleteSemesterResponse());
     }
 }

@@ -54,10 +54,9 @@ export const deleteEnrollment = createAsyncThunk(
   "enrollments/delete",
   async (id, thunkApi) => {
     try {
-      const { data } = await api.delete(`/enrollments/${id}`);
+      await api.delete(`/enrollments/${id}`);
 
-      data.id = id;
-      return data;
+      return id;
     } catch (error) {
       const message =
         (error.response &&
@@ -98,7 +97,6 @@ const enrollmentslice = createSlice({
         state.error = action.error;
       })
       .addCase(createEnrollment.fulfilled, (state, action) => {
-        enrollmentsAdapter.addOne(state, action.payload);
         state.isAdded = true;
       })
       .addCase(createEnrollment.rejected, (state, action) => {

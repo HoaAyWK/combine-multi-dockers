@@ -39,7 +39,7 @@ import {
   SimpleTableListToolbar,
   MoreMenu,
 } from "../components/tables";
-import { fDate, fDateTimeSuffix } from "../utils/formatTime";
+import { fDate } from "../utils/formatTime";
 import { clearMessage } from "../app/slices/messageSlice";
 import MoreMenuItem from "../components/tables/MoreMenuItem";
 import AlertDialog from "../components/AlertDialog";
@@ -54,7 +54,7 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-  { id: "name", label: "Full Name", alignRight: false },
+  { id: "firstName", label: "Full Name", alignRight: false },
   { id: "email", label: "email", alignRight: false },
   { id: "dateOfBirth", label: "Birth day", alignRight: false },
   { id: "gender", label: "Gender", alignRight: false },

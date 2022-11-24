@@ -79,10 +79,9 @@ export const deleteCourse = createAsyncThunk(
   "courses/delete",
   async (id, thunkApi) => {
     try {
-      const { data } = await api.delete(`/courses/${id}`);
-
-      data.id = id;
-      return data;
+      await api.delete(`/courses/${id}`);
+      
+      return id;
     } catch (error) {
       const message =
         (error.response &&
@@ -124,7 +123,6 @@ const courseslice = createSlice({
         state.error = action.error;
       })
       .addCase(createCourse.fulfilled, (state, action) => {
-        coursesAdapter.addOne(state, action.payload);
         state.isAdded = true;
       })
       .addCase(createCourse.rejected, (state, action) => {

@@ -4,19 +4,24 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using SM.API.DTOs.Instructor;
-using SM.Core.Entities;
 
 namespace SM.API.Controllers.v1;
 
 public class InstructorsController : BaseController
 {
     private readonly IInstructorService _instructorService;
+    private readonly ICourseService _courseService;
     private readonly IMapper _mapper;
     private readonly IAWSS3Service _awsS3Service;
 
-    public InstructorsController(IInstructorService instructorService, IMapper mapper, IAWSS3Service awsS3Service)
+    public InstructorsController(
+        IInstructorService instructorService,
+        ICourseService courseService,
+        IMapper mapper,
+        IAWSS3Service awsS3Service)
     {
         _instructorService = instructorService;
+        _courseService = courseService;
         _mapper = mapper;
         _awsS3Service = awsS3Service;
     }
@@ -79,7 +84,7 @@ public class InstructorsController : BaseController
 
         if (existringInstructor == null)
         {
-            return BadRequest("Instructor not found");
+            return BadRequest(new { message = "Instructor not found" });
         }
 
         string? avatar = null;
@@ -111,7 +116,7 @@ public class InstructorsController : BaseController
             request.Status);
 
         if (result == null)
-            return BadRequest("Instructor not found");
+            return BadRequest(new { message = "Instructor not found" });
         
         return Ok(result);
     }
@@ -123,7 +128,14 @@ public class InstructorsController : BaseController
         var instructor = await _instructorService.GetByIdAsync(id);
 
         if (instructor == null)
-            return BadRequest("Instructor not found");
+            return BadRequest(new { message = "Instructor not found" });
+
+        var courseWithInstructor = await _courseService.IsAnyCourseWithInstructorAsync(id);
+
+        if (courseWithInstructor)
+        {
+            return BadRequest(new { message = $"Another course already references this instructor"});
+        }
 
         if (instructor.Avatar != null)
         {

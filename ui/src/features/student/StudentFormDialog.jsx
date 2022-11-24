@@ -6,12 +6,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
 } from "@mui/material";
 import * as Yup from "yup";
 import { styled } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 
 import {
@@ -21,8 +22,9 @@ import {
 } from "../../components/hook-form";
 import { Stack } from "@mui/system";
 import AvatarUploader from "../../components/AvatarUploader";
-import { BASE_S3_URL } from "../../app/constants";
+import { action_status, BASE_S3_URL } from "../../app/constants";
 import RHFDate from "../../components/hook-form/RHFDate";
+import { useEffect } from "react";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.grey[500_24],
@@ -53,7 +55,10 @@ const StudentFormDialog = (props) => {
     handleClose,
   } = props;
 
+  const { updateStatus } = useSelector((state) => state.students);
+
   const dispatch = useDispatch();
+
   const StudentSchema = Yup.object().shape({
     firstName: Yup.string().required("First name is required"),
     lastName: Yup.string().required("Last name is required"),
@@ -83,6 +88,12 @@ const StudentFormDialog = (props) => {
     defaultValues.dateOfBirth = student.dateOfBirth;
   }
 
+  useEffect(() => {
+    if (updateStatus === action_status.SUCCEEDED) {
+      handleClose();
+    }
+  }, [updateStatus]);
+
   const methods = useForm({
     resolver: yupResolver(StudentSchema),
     defaultValues,
@@ -91,9 +102,7 @@ const StudentFormDialog = (props) => {
   const { handleSubmit } = methods;
 
   const onSubmit = async (data) => {
-    console.log(data);
     dispatch(studentAction(data));
-    handleClose();
   };
 
   return (
@@ -103,8 +112,14 @@ const StudentFormDialog = (props) => {
       <Box sx={{ padding: 2 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
-            <RHFTextField name="firstName" label="First Name *" fullWidth />
-            <RHFTextField name="lastName" label="Last Name *" fullWidth />
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={6}>
+                <RHFTextField name="firstName" label="First Name *" fullWidth />
+              </Grid>
+              <Grid item xs={12} md={6}> 
+                <RHFTextField name="lastName" label="Last Name *" fullWidth />
+              </Grid>
+            </Grid>
             <RHFTextField name="email" label="Email *" fullWidth />
             <RHFDate name="dateOfBirth" label="Date Of Birth *" fullWidth />
             <RHFRadioGroup
@@ -132,7 +147,11 @@ const StudentFormDialog = (props) => {
           </Stack>
           <DialogActions>
             <ButtonStyle onClick={handleClose}>Cancel</ButtonStyle>
-            <LoadingButtonSuccessStyle type="submit" variant="contained">
+            <LoadingButtonSuccessStyle
+              type="submit"
+              variant="contained"
+              loading={updateStatus === action_status.LOADING ? true : false}
+            >
               Save
             </LoadingButtonSuccessStyle>
           </DialogActions>

@@ -82,10 +82,9 @@ export const deleteSemester = createAsyncThunk(
   "semesters/delete",
   async (id, thunkApi) => {
     try {
-      const { data } = await api.delete(`/semesters/${id}`);
+      await api.delete(`/semesters/${id}`);
 
-      data.id = id;
-      return data;
+      return id;
     } catch (error) {
       const message =
         (error.response &&

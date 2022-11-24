@@ -18,7 +18,7 @@ const RHFDate = ({ name, ...other }) => {
           type="date"
           error={!!error}
           helperText={error?.message}
-          value={fDateN(field.value)}
+          value={field.value ? fDateN(field.value) : field.value}
           {...other}
           InputLabelProps={{
             shrink: true,

@@ -25,7 +25,7 @@ export const login = createAsyncThunk(
           error.response.data.messages[0]) ||
         error.message ||
         error.toString();
-
+        
       thunkApi.dispatch(
         setMessage({ message, variant: MESSAGE_VARIANT.ERROR })
       );

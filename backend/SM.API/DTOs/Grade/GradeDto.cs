@@ -11,5 +11,5 @@ public class GradeDto
 
     public CourseDto Course { get; set; } = default!;
 
-    public double Grade { get; set; }
+    public double Score { get; set; }
 }

@@ -60,6 +60,12 @@ const RHFSelect = ({ name, id, label, data }) => {
                     {item.subject.name}
                   </MenuItem>
                 ))}
+              {(name === "instructorId" &&
+                data?.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.firstName} {item.lastName}
+                  </MenuItem>
+              )))}
             </Select>
           );
         }}

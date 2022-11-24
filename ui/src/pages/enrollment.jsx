@@ -55,7 +55,7 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 
 const TABLE_HEAD = [
   { id: "student", label: "Student", alignRight: false },
-  { id: "subject", label: "Subject", alignRight: false },
+  { id: "course", label: "Course", alignRight: false },
   { id: "instructor", label: "Instructor", alignRight: false },
   { id: "semester", label: "Semester", alignRight: false },
   { id: "", label: "", alignRight: false },
@@ -110,8 +110,6 @@ const Enrollment = () => {
 
   const [openCreateFormDialog, setOpenCreateFormDialog] = useState(false);
 
-  const [openUpdateFormDialog, setOpenUpdateFormDialog] = useState(false);
-
   const dispatch = useDispatch();
 
   const enrollments = useSelector(selectAllEnrollments);
@@ -129,6 +127,7 @@ const Enrollment = () => {
   useEffect(() => {
     if (isAdded) {
       enqueueSnackbar("Created successfully", { variant: "success" });
+      dispatch(getEnrollments());
       dispatch(refresh());
     }
   }, [isAdded, enqueueSnackbar, dispatch]);
@@ -169,14 +168,6 @@ const Enrollment = () => {
 
   const handleClickCloseCreateFormDialog = () => {
     setOpenCreateFormDialog(false);
-  };
-
-  const handleClickOpenUpdateFormDialog = () => {
-    setOpenUpdateFormDialog(true);
-  };
-
-  const handleClickCloseUpdateFormDialog = () => {
-    setOpenUpdateFormDialog(false);
   };
 
   const handleDeleteClick = () => {
@@ -336,7 +327,7 @@ const Enrollment = () => {
                             </Box>
                           </TableCell>
                           <TableCell align="left">
-                            {course?.subject?.name}
+                            {`Course ${course?.id} - ${course?.subject?.name}`}
                           </TableCell>
 
                           <TableCell align="left" width={300}>

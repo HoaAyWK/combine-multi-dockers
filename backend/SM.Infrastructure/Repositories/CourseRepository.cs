@@ -28,4 +28,19 @@ public class CourseRepository : GenericRepository<Course>, ICourseRepository
             .Include(c => c.Subject)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<bool> IsAnyCourseWithInstructorAsync(int instructorId)
+    {
+        return await dbSet.Where(c => c.InstructorId == instructorId).AnyAsync();
+    }
+
+    public async Task<bool> IsAnyCourseWithSemesterAsync(int semesterId)
+    {
+        return await dbSet.Where(c => c.SemesterId == semesterId).AnyAsync();
+    }
+
+    public async Task<bool> IsAnyCourseWithSubjectAsync(int subjectId)
+    {
+        return await dbSet.Where(c => c.SubjectId == subjectId).AnyAsync();
+    }
 }

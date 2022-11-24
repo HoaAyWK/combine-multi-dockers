@@ -32,6 +32,8 @@ public class StudentService : IStudentService
             return null;
         }
 
+        await _unitOfWork.SaveChangesAsync();
+
         return result;
     }
 

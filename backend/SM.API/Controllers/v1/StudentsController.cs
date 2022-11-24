@@ -11,12 +11,18 @@ namespace SM.API.Controllers.v1;
 public class StudentsController : BaseController
 {
     private readonly IStudentService _studentService;
+    private readonly IEnrollmentService _enrollmentService;
     private readonly IMapper _mapper;
     private readonly IAWSS3Service _awsS3Service;
 
-    public StudentsController(IStudentService studentService, IMapper mapper, IAWSS3Service awsS3Service)
+    public StudentsController(
+        IStudentService studentService,
+        IEnrollmentService enrollmentService,
+        IMapper mapper,
+        IAWSS3Service awsS3Service)
     {
         _studentService = studentService;
+        _enrollmentService = enrollmentService;
         _mapper = mapper;
         _awsS3Service = awsS3Service;
     }
@@ -35,7 +41,7 @@ public class StudentsController : BaseController
         var result = await _studentService.GetByIdAsync(id);
 
         if (result == null) {
-            return BadRequest("Student not found");
+            return BadRequest(new { message = "Student not found" });
         }
 
         return Ok(result);
@@ -78,7 +84,7 @@ public class StudentsController : BaseController
 
         if (existingStudent == null)
         {
-            return BadRequest("Student not found");
+            return BadRequest(new { message = "Student not found" });
         }
 
         string? avatar = null;
@@ -106,7 +112,7 @@ public class StudentsController : BaseController
             request.Gender);
 
         if (result == null)
-            return BadRequest("Student not found");
+            return BadRequest(new { message = "Student not found" });
         
         return Ok(result);
     }
@@ -119,7 +125,14 @@ public class StudentsController : BaseController
 
         if (existingStudent == null)
         {
-            return BadRequest("Student not found");
+            return BadRequest(new { message = "Student not found" });
+        }
+
+        var enrollmentWithStudent = await _enrollmentService.IsAnyEnrollmentWithStudentAsync(id);
+
+        if (enrollmentWithStudent)
+        {
+            return BadRequest(new { message = "Another enrollment already references this student" });
         }
 
         if (existingStudent.Avatar != null)

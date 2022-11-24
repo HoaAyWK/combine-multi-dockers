@@ -24,6 +24,21 @@ public class EnrollmentService : IEnrollmentService
         return await _unitOfWork.Enrollments.GetByIdAsync(enrollmentId);
     }
 
+    public async Task<Enrollment?> GetByCourseIdAndStudentId(int courseId, int studentId)
+    {
+        return await _unitOfWork.Enrollments.GetEnrollmentByCourseAndStudentAsync(courseId, studentId);
+    }
+
+    public async Task<bool> IsAnyEnrollmentWithStudentAsync(int studentId)
+    {
+        return await _unitOfWork.Enrollments.IsAnyEnrollmentWithStudentAsync(studentId);
+    }
+
+    public async Task<bool> IsAnyEnrollmentWithCourseAsync(int courseId)
+    {
+        return await _unitOfWork.Enrollments.IsAnyEnrollmentWithCourseAsync(courseId);
+    }
+
     public async Task<Enrollment?> CreateAsync(Enrollment enrollment)
     {
         var existingEnrollment = await _unitOfWork.Enrollments
@@ -40,25 +55,18 @@ public class EnrollmentService : IEnrollmentService
         return result;
     }
 
-    public async Task<string> DeleteAsync(int enrollmentId)
+    public async Task<bool> DeleteAsync(int enrollmentId)
     {
         var enrollmentToDelete = await _unitOfWork.Enrollments.GetByIdAsync(enrollmentId);
 
         if (enrollmentToDelete == null)
         {
-            return EnrollmentMessages.NotFound;
+            return false;
         }
-
-        var existingGrade = await _unitOfWork.Grades.GetGradeByCourseAndStudentAsync(enrollmentToDelete.CourseId, enrollmentToDelete.StudentId);
-
-        if (existingGrade != null)
-        {
-            return $"Please delete Grade with courseId '{enrollmentToDelete.CourseId}' and studentId '{enrollmentToDelete.StudentId}' first!";
-        } 
         
         _unitOfWork.Enrollments.Delete(enrollmentToDelete);
         await _unitOfWork.SaveChangesAsync();
 
-        return EnrollmentMessages.Deleted;
+        return true;
     }
 }

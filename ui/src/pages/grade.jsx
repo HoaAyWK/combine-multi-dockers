@@ -42,6 +42,8 @@ import { clearMessage } from "../app/slices/messageSlice";
 import MoreMenuItem from "../components/tables/MoreMenuItem";
 import AlertDialog from "../components/AlertDialog";
 import GradeFormDialog from "../features/grade/GradeFormDialog";
+import { getStudents } from "../app/slices/studentSlice";
+import { getCourses } from "../app/slices/courseSlice";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.success.dark,
@@ -53,10 +55,10 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 
 const TABLE_HEAD = [
   { id: "student", label: "Student", alignRight: false },
-  { id: "subject", label: "Subject", alignRight: false },
+  { id: "course.id", label: "Course", alignRight: false },
   { id: "instructor", label: "Instructor", alignRight: false },
   { id: "semester", label: "Semester", alignRight: false },
-  { id: "grade", label: "Grade", alignRight: false },
+  { id: "score", label: "Grade", alignRight: false },
   { id: "", label: "", alignRight: false },
 ];
 
@@ -106,7 +108,6 @@ const Grade = () => {
 
   const [openCreateFormDialog, setOpenCreateFormDialog] = useState(false);
 
-  const [openUpdateFormDialog, setOpenUpdateFormDialog] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -116,6 +117,10 @@ const Grade = () => {
     (state) => state.grades
   );
 
+  const { status: studentStatus } = useSelector((state) => state.students);
+
+  const { status: courseStatus } = useSelector((state) => state.courses);
+
   const { message } = useSelector((state) => state.message);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -123,8 +128,19 @@ const Grade = () => {
   const { status } = useSelector((state) => state.grades);
 
   useEffect(() => {
+    if (studentStatus === action_status.IDLE) {
+      dispatch(getStudents());
+    }
+
+    if (courseStatus === action_status.IDLE) {
+      dispatch(getCourses());
+    }
+  }, [studentStatus, courseStatus]);
+
+  useEffect(() => {
     if (isAdded) {
       enqueueSnackbar("Created successfully", { variant: "success" });
+      dispatch(getGrades());
       dispatch(refresh());
     }
   }, [isAdded, enqueueSnackbar, dispatch]);
@@ -165,14 +181,6 @@ const Grade = () => {
 
   const handleClickCloseCreateFormDialog = () => {
     setOpenCreateFormDialog(false);
-  };
-
-  const handleClickOpenUpdateFormDialog = () => {
-    setOpenUpdateFormDialog(true);
-  };
-
-  const handleClickCloseUpdateFormDialog = () => {
-    setOpenUpdateFormDialog(false);
   };
 
   const handleDeleteClick = () => {
@@ -302,7 +310,7 @@ const Grade = () => {
                   {filteredGrades
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { id, student, grade, course } = row;
+                      const { id, student, score, course } = row;
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
@@ -332,7 +340,7 @@ const Grade = () => {
                             </Box>
                           </TableCell>
                           <TableCell align="left">
-                            {course?.subject?.name}
+                            {`Couser ${course?.id} - ${course?.subject?.name}`}
                           </TableCell>
                           <TableCell align="left" width={300}>
                             <Box
@@ -364,7 +372,7 @@ const Grade = () => {
                           <TableCell align="left">
                             {course?.semester?.name}
                           </TableCell>
-                          <TableCell align="left">{grade}</TableCell>
+                          <TableCell align="left">{score}</TableCell>
 
                           <TableCell align="right">
                             <MoreMenu>

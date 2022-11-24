@@ -11,11 +11,16 @@ namespace SM.API.Controllers.v1;
 public class SubjectsController : BaseController
 {
     private readonly ISubjectService _subjectService;
+    private readonly ICourseService _courseService;
     private readonly IMapper _mapper;
 
-    public SubjectsController(ISubjectService subjectService, IMapper mapper)
+    public SubjectsController(
+        ISubjectService subjectService,
+        ICourseService courseService,
+        IMapper mapper)
     {
         _subjectService = subjectService;
+        _courseService = courseService;
         _mapper = mapper;
     }
 
@@ -34,7 +39,7 @@ public class SubjectsController : BaseController
 
         if (result == null)
         {
-            return BadRequest("Subject not found");
+            return BadRequest(new { message = "Subject not found" });
         }
 
         return Ok(result);
@@ -50,7 +55,7 @@ public class SubjectsController : BaseController
         var result = await _subjectService.CreateAsync(subject);
 
         if (result == null) {
-            return BadRequest($"Subject with name '{request.Name}' already exists");
+            return BadRequest(new { message = $"Subject with name '{request.Name}' already exists" });
         }
 
         return Ok(result);
@@ -64,7 +69,7 @@ public class SubjectsController : BaseController
         var result = await _subjectService.UpdateAsync(id, request.Name, request.NumOfCredits);
 
         if (result == null)
-            return BadRequest("Subject not found");
+            return BadRequest(new { message = "Subject not found" });
         
         return Ok(result);
     }
@@ -72,11 +77,18 @@ public class SubjectsController : BaseController
     [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Delete(int id)
-    {
+    {   
+        var courseWithSubject = await _courseService.IsAnyCourseWithSubjectAsync(id);
+
+        if (courseWithSubject)
+        {
+            return BadRequest(new { message = "Another course already references this subject" });
+        }
+        
         var result = await _subjectService.DeleteAsync(id);
 
         if (result == false)
-            return BadRequest("Subject not found");
+            return BadRequest(new { message = "Subject not found" });
 
         return Ok(new DeleteSubjectResponse());
     }

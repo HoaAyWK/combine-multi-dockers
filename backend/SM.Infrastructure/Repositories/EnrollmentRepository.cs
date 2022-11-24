@@ -37,6 +37,16 @@ public class EnrollmentRepository : GenericRepository<Enrollment>, IEnrollmentRe
             .FirstOrDefaultAsync();
     }
 
+    public async Task<bool> IsAnyEnrollmentWithStudentAsync(int studentId)
+    {
+        return await dbSet.Where(e => e.StudentId == studentId).AnyAsync();
+    }
+
+    public async Task<bool> IsAnyEnrollmentWithCourseAsync(int courseId)
+    {
+        return await dbSet.Where(e => e.CourseId == courseId).AnyAsync();
+    }
+
     public async Task<Enrollment?> GetEnrollmentByCourseAndStudentAsync(int courseId, int studentId)
     {
         return await dbSet

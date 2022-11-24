@@ -23,6 +23,11 @@ public class GradeService : IGradeService
         return await _unitOfWork.Grades.GetByIdAsync(gradeId);
     }
 
+    public async Task<Grade?> GetByCourseIdAndStudentId(int courseId, int studentId)
+    {
+        return await _unitOfWork.Grades.GetGradeByCourseAndStudentAsync(courseId, studentId);
+    }
+
     public async Task<Grade?> CreateAsync(Grade grade)
     {
         var existingEnrollment = await _unitOfWork.Enrollments

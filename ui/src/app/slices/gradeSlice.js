@@ -51,10 +51,9 @@ export const deleteGrade = createAsyncThunk(
   "grades/delete",
   async (id, thunkApi) => {
     try {
-      const { data } = await api.delete(`/grades/${id}`);
+      await api.delete(`/grades/${id}`);
 
-      data.id = id;
-      return data;
+      return id;
     } catch (error) {
       const message =
         (error.response &&
@@ -95,7 +94,6 @@ const gradeslice = createSlice({
         state.error = action.error;
       })
       .addCase(createGrade.fulfilled, (state, action) => {
-        gradesAdapter.addOne(state, action.payload);
         state.isAdded = true;
       })
       .addCase(createGrade.rejected, (state, action) => {
