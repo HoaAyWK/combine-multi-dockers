@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useFormContext, Controller } from "react-hook-form";
 import TextField from "@mui/material/TextField";
+import { fDateN } from "../../utils/formatTime";
 
 const RHFDate = ({ name, ...other }) => {
   const { control } = useFormContext();
@@ -17,8 +18,8 @@ const RHFDate = ({ name, ...other }) => {
           type="date"
           error={!!error}
           helperText={error?.message}
+          value={fDateN(field.value)}
           {...other}
-          sx={{ width: 220 }}
           InputLabelProps={{
             shrink: true,
           }}

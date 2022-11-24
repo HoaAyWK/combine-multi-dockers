@@ -26,14 +26,14 @@ import Page from "../components/Page";
 import Iconify from "../components/Iconify";
 import SearchNotFound from "../components/SearchNotFound";
 import {
-  createInstructor,
-  updateInstructor,
-  deleteInstructor,
-  getInstructors,
+  createCourse,
+  updateCourse,
+  deleteCourse,
   refresh,
-  selectAllInstructors,
-} from "../app/slices/instructorSlice";
-import { action_status } from "../app/constants";
+  selectAllCourses,
+  getCourses,
+} from "../app/slices/courseSlice";
+import { action_status, BASE_S3_URL } from "../app/constants";
 import {
   SimpleTableListHead,
   SimpleTableListToolbar,
@@ -43,7 +43,7 @@ import { fDate } from "../utils/formatTime";
 import { clearMessage } from "../app/slices/messageSlice";
 import MoreMenuItem from "../components/tables/MoreMenuItem";
 import AlertDialog from "../components/AlertDialog";
-import InstructorFormDialog from "../features/instructor/InstructorFormDialog";
+import CourseFormDialog from "../features/course/CourseFormDialog";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.success.dark,
@@ -54,12 +54,9 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-  { id: "name", label: "Full Name", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "phone", label: "Phone", alignRight: false },
-  { id: "dateOfBirth", label: "Birth day", alignRight: false },
-  { id: "dateJoin", label: "Date Join", alignRight: false },
-  { id: "status", label: "Status", alignRight: false },
+  { id: "fullname", label: "FullName", alignRight: false },
+  { id: "subject", label: "Subject", alignRight: false },
+  { id: "semester", label: "Semester", alignRight: false },
   { id: "", label: "", alignRight: false },
 ];
 
@@ -97,7 +94,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-const Instructor = () => {
+const Course = () => {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState("asc");
@@ -116,17 +113,17 @@ const Instructor = () => {
 
   const dispatch = useDispatch();
 
-  const instructors = useSelector(selectAllInstructors);
+  const courses = useSelector(selectAllCourses);
 
   const { isAdded, isDeleted, isUpdated } = useSelector(
-    (state) => state.instructors
+    (state) => state.courses
   );
 
   const { message } = useSelector((state) => state.message);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { status } = useSelector((state) => state.instructors);
+  const { status } = useSelector((state) => state.courses);
 
   useEffect(() => {
     if (isAdded) {
@@ -137,7 +134,7 @@ const Instructor = () => {
 
   useEffect(() => {
     if (status === action_status.IDLE) {
-      dispatch(getInstructors());
+      dispatch(getCourses());
     }
     dispatch(clearMessage());
     dispatch(refresh());
@@ -146,7 +143,7 @@ const Instructor = () => {
   useEffect(() => {
     if (isUpdated) {
       enqueueSnackbar("Updated successfully", { variant: "success" });
-      dispatch(getInstructors());
+      dispatch(getCourses());
       dispatch(refresh());
     }
   }, [isUpdated, enqueueSnackbar, dispatch]);
@@ -186,7 +183,7 @@ const Instructor = () => {
   };
 
   const handleDelete = (id) => {
-    dispatch(deleteInstructor(id));
+    dispatch(deleteCourse(id));
   };
 
   const handleRequestSort = (event, property) => {
@@ -214,7 +211,7 @@ const Instructor = () => {
 
   if (status === action_status.LOADING) {
     return (
-      <Page title="Instructor">
+      <Page title="Course">
         <Container maxWidth="xl">
           <Box
             sx={{
@@ -232,7 +229,7 @@ const Instructor = () => {
     );
   } else if (status === action_status.FAILED) {
     return (
-      <Page title="Instructor">
+      <Page title="Course">
         <Container maxWidth="xl">
           <Box
             sx={{
@@ -250,18 +247,20 @@ const Instructor = () => {
     );
   } else if (status === action_status.SUCCEEDED) {
     const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - instructors.length) : 0;
+      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - courses.length) : 0;
 
-    const filteredInstructors = applySortFilter(
-      instructors,
+    const filteredCourses = applySortFilter(
+      courses,
       getComparator(order, orderBy),
       filterName
     );
 
-    const isInstructorNotFound = filteredInstructors.length === 0;
+    const isCourseNotFound = filteredCourses.length === 0;
+
+    console.log(courses);
 
     return (
-      <Page title="Instructor">
+      <Page title="Course">
         <Container maxWidth="xl">
           <Stack
             direction="row"
@@ -269,7 +268,7 @@ const Instructor = () => {
             justifyContent="space-between"
             mb={5}
           >
-            <Typography variant="h4">Instructor</Typography>
+            <Typography variant="h4">Course</Typography>
             <ButtonStyle
               variant="contained"
               onClick={handleClickOpenCreateFormDialog}
@@ -277,21 +276,21 @@ const Instructor = () => {
                 <Iconify icon="eva:plus-fill" style={{ color: "white" }} />
               }
             >
-              New Instructor
+              New Course
             </ButtonStyle>
           </Stack>
-          <InstructorFormDialog
+          <CourseFormDialog
             open={openCreateFormDialog}
             handleClose={handleClickCloseCreateFormDialog}
-            dialogTitle="Create Instructor"
-            dialogContent="Create a new Instructor"
-            instructorAction={createInstructor}
+            dialogTitle="Create Course"
+            dialogContent="Create a new Course"
+            courseAction={createCourse}
           />
           <Card>
             <SimpleTableListToolbar
               filterName={filterName}
               onFilterName={handleFilterByName}
-              title="Instructor"
+              title="Course"
             />
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -299,24 +298,14 @@ const Instructor = () => {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={instructors.length}
+                  rowCount={courses.length}
                   onRequestSort={handleRequestSort}
                 />
                 <TableBody>
-                  {filteredInstructors
+                  {filteredCourses
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const {
-                        id,
-                        firstName,
-                        lastName,
-                        email,
-                        phone,
-                        dateOfBirth,
-                        dateJoin,
-                        status,
-                        avatar,
-                      } = row;
+                      const { id, instructor, semester, subject } = row;
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
@@ -327,10 +316,15 @@ const Instructor = () => {
                                 alignItems: "center",
                               }}
                             >
-                              {avatar ? (
-                                <Avatar src={avatar} alt={`${firstName}`} />
+                              {instructor?.avatar ? (
+                                <Avatar
+                                  src={`${BASE_S3_URL}${instructor?.avatar}`}
+                                  alt={`${instructor?.firstName}`}
+                                />
                               ) : (
-                                <LetterAvatar name={`${firstName}`} />
+                                <LetterAvatar
+                                  name={`${instructor?.firstName}`}
+                                />
                               )}
                               <Typography
                                 variant="body1"
@@ -338,17 +332,13 @@ const Instructor = () => {
                                   marginInlineStart: 1,
                                 }}
                               >
-                                {`${firstName} ${lastName}`}
+                                {`${instructor?.firstName} ${instructor?.lastName}`}
                               </Typography>
                             </Box>
                           </TableCell>
-                          <TableCell align="left">{email}</TableCell>
-                          <TableCell align="left">{phone}</TableCell>
-                          <TableCell align="left">
-                            {fDate(dateOfBirth)}
-                          </TableCell>
-                          <TableCell align="left">{fDate(dateJoin)}</TableCell>
-                          <TableCell align="left">{status}</TableCell>
+                          <TableCell align="left">{subject.name}</TableCell>
+
+                          <TableCell align="left">{semester.name}</TableCell>
                           <TableCell align="right">
                             <MoreMenu>
                               <MoreMenuItem
@@ -366,18 +356,18 @@ const Instructor = () => {
                                 itemId={id}
                                 open={open}
                                 handleClose={handleClose}
-                                title="Delete Instructor"
-                                content="Are you sure to delete this instructor"
+                                title="Delete Course"
+                                content="Are you sure to delete this course"
                                 handleConfirm={handleDelete}
                                 color="error"
                               />
-                              <InstructorFormDialog
+                              <CourseFormDialog
                                 open={openUpdateFormDialog}
                                 handleClose={handleClickCloseUpdateFormDialog}
-                                dialogTitle="Edit Instructor"
-                                dialogContent="Update Instructor"
-                                instructor={row}
-                                instructorAction={updateInstructor}
+                                dialogTitle="Edit Course"
+                                dialogContent="Update Course"
+                                course={row}
+                                courseAction={updateCourse}
                               />
                             </MoreMenu>
                           </TableCell>
@@ -391,7 +381,7 @@ const Instructor = () => {
                   )}
                 </TableBody>
 
-                {isInstructorNotFound && (
+                {isCourseNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -405,7 +395,7 @@ const Instructor = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={instructors.length}
+              count={courses.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -418,4 +408,4 @@ const Instructor = () => {
   }
 };
 
-export default Instructor;
+export default Course;

@@ -8,6 +8,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/Page404";
 import Student from "./pages/Student";
+import Instructor from "./pages/Instructor";
+import Course from "./pages/course";
+import Subject from "./pages/subject";
+import Enrollment from "./pages/enrollment";
+import Grade from "./pages/grade";
+import { element } from "prop-types";
+import Semester from "./pages/semester";
 
 const Router = () => {
   return useRoutes([
@@ -17,6 +24,12 @@ const Router = () => {
       children: [
         { path: "app", element: <DashboardApp /> },
         { path: "students", element: <Student /> },
+        { path: "instructors", element: <Instructor /> },
+        { path: "courses", element: <Course /> },
+        { path: "subjects", element: <Subject /> },
+        { path: "enrollments", element: <Enrollment /> },
+        { path: "grades", element: <Grade /> },
+        { path: "semesters", element: <Semester /> },
       ],
     },
     {

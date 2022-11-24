@@ -26,24 +26,22 @@ import Page from "../components/Page";
 import Iconify from "../components/Iconify";
 import SearchNotFound from "../components/SearchNotFound";
 import {
-  createInstructor,
-  updateInstructor,
-  deleteInstructor,
-  getInstructors,
+  createGrade,
+  deleteGrade,
   refresh,
-  selectAllInstructors,
-} from "../app/slices/instructorSlice";
-import { action_status } from "../app/constants";
+  getGrades,
+  selectAllGrades,
+} from "../app/slices/gradeSlice";
+import { action_status, BASE_S3_URL } from "../app/constants";
 import {
   SimpleTableListHead,
   SimpleTableListToolbar,
   MoreMenu,
 } from "../components/tables";
-import { fDate } from "../utils/formatTime";
 import { clearMessage } from "../app/slices/messageSlice";
 import MoreMenuItem from "../components/tables/MoreMenuItem";
 import AlertDialog from "../components/AlertDialog";
-import InstructorFormDialog from "../features/instructor/InstructorFormDialog";
+import GradeFormDialog from "../features/grade/GradeFormDialog";
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.success.dark,
@@ -54,12 +52,11 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-  { id: "name", label: "Full Name", alignRight: false },
-  { id: "email", label: "Email", alignRight: false },
-  { id: "phone", label: "Phone", alignRight: false },
-  { id: "dateOfBirth", label: "Birth day", alignRight: false },
-  { id: "dateJoin", label: "Date Join", alignRight: false },
-  { id: "status", label: "Status", alignRight: false },
+  { id: "student", label: "Student", alignRight: false },
+  { id: "subject", label: "Subject", alignRight: false },
+  { id: "instructor", label: "Instructor", alignRight: false },
+  { id: "semester", label: "Semester", alignRight: false },
+  { id: "grade", label: "Grade", alignRight: false },
   { id: "", label: "", alignRight: false },
 ];
 
@@ -87,17 +84,14 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(
-      array,
-      (item) =>
-        item.firstName.toLowerCase().includes(query.toLowerCase()) ||
-        item.lastName.toLowerCase().includes(query.toLowerCase())
+    return filter(array, (item) =>
+      item.name.toLowerCase().includes(query.toLowerCase())
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-const Instructor = () => {
+const Grade = () => {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState("asc");
@@ -116,17 +110,17 @@ const Instructor = () => {
 
   const dispatch = useDispatch();
 
-  const instructors = useSelector(selectAllInstructors);
+  const grades = useSelector(selectAllGrades);
 
   const { isAdded, isDeleted, isUpdated } = useSelector(
-    (state) => state.instructors
+    (state) => state.grades
   );
 
   const { message } = useSelector((state) => state.message);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { status } = useSelector((state) => state.instructors);
+  const { status } = useSelector((state) => state.grades);
 
   useEffect(() => {
     if (isAdded) {
@@ -137,7 +131,7 @@ const Instructor = () => {
 
   useEffect(() => {
     if (status === action_status.IDLE) {
-      dispatch(getInstructors());
+      dispatch(getGrades());
     }
     dispatch(clearMessage());
     dispatch(refresh());
@@ -146,7 +140,7 @@ const Instructor = () => {
   useEffect(() => {
     if (isUpdated) {
       enqueueSnackbar("Updated successfully", { variant: "success" });
-      dispatch(getInstructors());
+      dispatch(getGrades());
       dispatch(refresh());
     }
   }, [isUpdated, enqueueSnackbar, dispatch]);
@@ -186,7 +180,7 @@ const Instructor = () => {
   };
 
   const handleDelete = (id) => {
-    dispatch(deleteInstructor(id));
+    dispatch(deleteGrade(id));
   };
 
   const handleRequestSort = (event, property) => {
@@ -214,7 +208,7 @@ const Instructor = () => {
 
   if (status === action_status.LOADING) {
     return (
-      <Page title="Instructor">
+      <Page title="Grade">
         <Container maxWidth="xl">
           <Box
             sx={{
@@ -232,7 +226,7 @@ const Instructor = () => {
     );
   } else if (status === action_status.FAILED) {
     return (
-      <Page title="Instructor">
+      <Page title="Grade">
         <Container maxWidth="xl">
           <Box
             sx={{
@@ -250,18 +244,20 @@ const Instructor = () => {
     );
   } else if (status === action_status.SUCCEEDED) {
     const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - instructors.length) : 0;
+      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - grades.length) : 0;
 
-    const filteredInstructors = applySortFilter(
-      instructors,
+    const filteredGrades = applySortFilter(
+      grades,
       getComparator(order, orderBy),
       filterName
     );
 
-    const isInstructorNotFound = filteredInstructors.length === 0;
+    const isGradesNotFound = filteredGrades.length === 0;
+
+    console.log("Grades", grades);
 
     return (
-      <Page title="Instructor">
+      <Page title="Grades">
         <Container maxWidth="xl">
           <Stack
             direction="row"
@@ -269,7 +265,7 @@ const Instructor = () => {
             justifyContent="space-between"
             mb={5}
           >
-            <Typography variant="h4">Instructor</Typography>
+            <Typography variant="h4">Grades</Typography>
             <ButtonStyle
               variant="contained"
               onClick={handleClickOpenCreateFormDialog}
@@ -277,21 +273,21 @@ const Instructor = () => {
                 <Iconify icon="eva:plus-fill" style={{ color: "white" }} />
               }
             >
-              New Instructor
+              New Grades
             </ButtonStyle>
           </Stack>
-          <InstructorFormDialog
+          <GradeFormDialog
             open={openCreateFormDialog}
             handleClose={handleClickCloseCreateFormDialog}
-            dialogTitle="Create Instructor"
-            dialogContent="Create a new Instructor"
-            instructorAction={createInstructor}
+            dialogTitle="Create Grade"
+            dialogContent="Create a new Grade"
+            gradeAction={createGrade}
           />
           <Card>
             <SimpleTableListToolbar
               filterName={filterName}
               onFilterName={handleFilterByName}
-              title="Instructor"
+              title="Subject"
             />
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -299,24 +295,14 @@ const Instructor = () => {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={instructors.length}
+                  rowCount={grades.length}
                   onRequestSort={handleRequestSort}
                 />
                 <TableBody>
-                  {filteredInstructors
+                  {filteredGrades
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const {
-                        id,
-                        firstName,
-                        lastName,
-                        email,
-                        phone,
-                        dateOfBirth,
-                        dateJoin,
-                        status,
-                        avatar,
-                      } = row;
+                      const { id, student, grade, course } = row;
 
                       return (
                         <TableRow hover key={id} tabIndex={-1}>
@@ -327,10 +313,13 @@ const Instructor = () => {
                                 alignItems: "center",
                               }}
                             >
-                              {avatar ? (
-                                <Avatar src={avatar} alt={`${firstName}`} />
+                              {student?.avatar ? (
+                                <Avatar
+                                  src={`${BASE_S3_URL}${student?.avatar}`}
+                                  alt={`${student?.firstName}`}
+                                />
                               ) : (
-                                <LetterAvatar name={`${firstName}`} />
+                                <LetterAvatar name={`${student?.firstName}`} />
                               )}
                               <Typography
                                 variant="body1"
@@ -338,24 +327,47 @@ const Instructor = () => {
                                   marginInlineStart: 1,
                                 }}
                               >
-                                {`${firstName} ${lastName}`}
+                                {`${student?.firstName} ${student?.lastName}`}
                               </Typography>
                             </Box>
                           </TableCell>
-                          <TableCell align="left">{email}</TableCell>
-                          <TableCell align="left">{phone}</TableCell>
                           <TableCell align="left">
-                            {fDate(dateOfBirth)}
+                            {course?.subject?.name}
                           </TableCell>
-                          <TableCell align="left">{fDate(dateJoin)}</TableCell>
-                          <TableCell align="left">{status}</TableCell>
+                          <TableCell align="left" width={300}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              {course?.instructor?.avatar ? (
+                                <Avatar
+                                  src={`${BASE_S3_URL}${course?.instructor?.avatar}`}
+                                  alt={`${course?.instructor?.firstName}`}
+                                />
+                              ) : (
+                                <LetterAvatar
+                                  name={`${course?.instructor?.firstName}`}
+                                />
+                              )}
+                              <Typography
+                                variant="body1"
+                                sx={{
+                                  marginInlineStart: 1,
+                                }}
+                              >
+                                {`${course?.instructor?.firstName} ${course?.instructor?.lastName}`}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell align="left">
+                            {course?.semester?.name}
+                          </TableCell>
+                          <TableCell align="left">{grade}</TableCell>
+
                           <TableCell align="right">
                             <MoreMenu>
-                              <MoreMenuItem
-                                title="Edit"
-                                iconName="eva:edit-fill"
-                                handleClick={handleClickOpenUpdateFormDialog}
-                              />
                               <MoreMenuItem
                                 title="Delete"
                                 iconName="eva:trash-2-outline"
@@ -366,18 +378,10 @@ const Instructor = () => {
                                 itemId={id}
                                 open={open}
                                 handleClose={handleClose}
-                                title="Delete Instructor"
-                                content="Are you sure to delete this instructor"
+                                title="Delete Subject"
+                                content="Are you sure to delete this subject"
                                 handleConfirm={handleDelete}
                                 color="error"
-                              />
-                              <InstructorFormDialog
-                                open={openUpdateFormDialog}
-                                handleClose={handleClickCloseUpdateFormDialog}
-                                dialogTitle="Edit Instructor"
-                                dialogContent="Update Instructor"
-                                instructor={row}
-                                instructorAction={updateInstructor}
                               />
                             </MoreMenu>
                           </TableCell>
@@ -391,7 +395,7 @@ const Instructor = () => {
                   )}
                 </TableBody>
 
-                {isInstructorNotFound && (
+                {isGradesNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -405,7 +409,7 @@ const Instructor = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={instructors.length}
+              count={grades.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -418,4 +422,4 @@ const Instructor = () => {
   }
 };
 
-export default Instructor;
+export default Grade;
