@@ -1,4 +1,4 @@
-export const BASE_API_URL = "http://localhost:5001/api/v1";
+export const BASE_API_URL = window._env_.API_URL;
 
 export const action_status = {
   IDLE: "idle",
@@ -21,4 +21,4 @@ export const ROLES = {
 };
 
 export const BASE_S3_URL =
-  "https://sioaybucket.s3.ap-southeast-1.amazonaws.com/";
+window._env_.S3_BASE_URL || "https://sioaybucket.s3.ap-southeast-1.amazonaws.com/";

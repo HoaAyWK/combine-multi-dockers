@@ -24,3 +24,5 @@ services:
       - AWSConfig__AWSSecretKey=$AWSConfig__AWSSecretKey
       - AWSConfig__BucketName=$AWSConfig__BucketName
       - ClientOrigin=$ClientOrigin
+      - ConnectionStrings__StudentManagementConnection=$ConnectionStrings__StudentManagementConnection
+      - ConnectionStrings__IdentityConnection=$ConnectionStrings__IdentityConnection

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Alert, Link, Stack, IconButton, InputAdornment } from "@mui/material";
+import { Alert, Link, Stack, IconButton, InputAdornment, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
