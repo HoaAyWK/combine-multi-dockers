@@ -38,7 +38,7 @@
 
 ![Turn off block](/assets//config-bucket-02.png)
 
-### Bước 2: Tạo 3 EC2 instance
+### Bước 3: Tạo 3 EC2 instance
 
 | Instance | AMI| Port open | Subnet | Security Group |
 |--|--|--|--|--|
@@ -56,14 +56,14 @@
     sudo apt-get install acl
     sudo setfacl -m u:ubuntu:rw /var/run/docker.sock
 
-### Bước 3: Chạy MSSQL Server trên instance DatabaseServer
+### Bước 4: Chạy MSSQL Server trên instance DatabaseServer
 
     docker run -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD=<YourStrong!Passw0rd>' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
 
-### Bước 4: Chạy backend trên instance BackendServer
+### Bước 5: Chạy backend trên instance BackendServer
     docker run -e 'AWSConfig__AWSAccessKey=<your access key>' -e 'AWSConfig__AWSSecretKey=<your secret key>' -e 'AWSConfig__BucketName=<your s3 bucket name>' -e 'ClientOrigin=<Public IPv4 DNS of UIServer instance>' -e 'ConnectionStrings__StudentManagementConnection=Server=<Public IPv4 DNS of DatabaseServer instance>, 1433; Database=Cloud.SM; User=SA; Password=<your db password>;' -e 'ConnectionStrings__IdentityConnection=Server=<Public IPv4 DNS of DatabaseServer instance>, 1433; Database=Cloud.Identity; User=SA; Password=<your db password>;' -p 80:80 -d nsioay/sm_be:latest
 
-### Bước 5: Chạy frontend trên instance UIServer
+### Bước 6: Chạy frontend trên instance UIServer
     docker run -e 'API_URL=http://<Pulbic IPv4 DNS of BackendServer>/api/v1' -e 'S3_BASE_URL=https://<your bucket name>.s3.<S3 bucket region>.amazons.com/' -p 80:80 -d nsioay/sm_fe:latest
 
 ### Truy cập vào ứng dụng
