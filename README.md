@@ -60,9 +60,9 @@
 
 | Instance | AMI| Port open | Subnet | Security Group |
 |--|--|--|--|--|
-| Database| Ubuntu |  1433 | public-subnet-1 | DatabaseSG|
-| Backend | Ubuntu | 80 | public-subnet-1 | BackendSG|
-| UI | Ubuntu | 80 | public-subnet-1 | UISG |
+| Database| Ubuntu |  1433 | public-subnet-1 | Database Security Group|
+| Backend | Ubuntu | 80 | public-subnet-1 | Backend Security Group|
+| UI | Ubuntu | 80 | public-subnet-1 | UI Security Group |
 
 
 #### Tạo Database instance
